@@ -1,0 +1,5 @@
+Seed: 42 | Dataset: Wine | K: 5 | MFCM Reps: 10 | Neighbors: 5
+Porcentagem de variaveis cortadas: 0%
+Com filtro MFCM - F1 Score: 0.9682539682539683 | Tempo: 0.002928495407104492
+Com filtro Mutual - F1 Score: 1.0 | Tempo: 0.0019545555114746094
+

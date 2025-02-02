@@ -1,5 +1,5 @@
 import numpy as np
-from numba import jit, cuda, njit
+# from numba import jit, cuda, njit
 from timeit import default_timer as timer
 
 # @jit(target='cuda')

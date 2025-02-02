@@ -184,35 +184,6 @@ def media_desvio_padrao(lista):
 
 def cross_validation(data, target, seed, n_neighbors, nFilterRep, nClasses, porcentagemVar, filter_name):
 
-    # inicio = time.time()
-
-        # print('Fold Interno')
-
-        # # print(f'var: {data[test].shape[1]}')
-        # numVar = (data[test].shape[1] // 2)
-
-        # if filter_name == 'MFCM':
-
-        #     mfcm = exec_mfcm_filter(data, nFilterRep, nClasses)
-
-        #     filtered_train = filter(data[train], mfcm, numVar, nClasses)
-        #     filtered_test = filter(data[test], mfcm, numVar, nClasses)
-        # elif filter_name == 'MUTUAL':
-        #     filtered_train = filtro_mutual_info(data[train], target[train], numVar)
-        #     filtered_test = filtro_mutual_info(data[test], target[test], numVar)
-
-        # f1, accuracy, precision, recall, tempo = exec_knn(filtered_train, filtered_test, target[train], target[test], n_neighbors)
-
-        # if f1 > best_result:
-        #     best_result = f1
-        #     if filter_name == 'MFCM':
-        #         best_mfcm = mfcm
-        #     best_data = (data[train], data[test], target[train], target[test])
-
-    # fim = time.time()
-
-    # print(f'TEMPO DE EXECUÇÃO DA FOLD: {fim - inicio} segundos')
-
     X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.2, random_state=seed)
     scores_porcentagem = []
 
@@ -266,58 +237,6 @@ def synthetic(indexData, n_neighbors, nFilterRep, mc):
     prec_std_list.append(precision_std)
     rec_std_list.append(recall_std)
     time_std_list.append(time_std)
-
-    # print(lista_resultados_mfcm)
-
-    # print(f'TAMANHO LISTA: {len(f1_avg_list)}')
-
-    # print(f'Média F1 Score: {sum(f1_avg_list) / len(f1_avg_list)}')
-    # print(f'Média Acurácia: {sum(acc_avg_list) / len(acc_avg_list)}')
-    # print(f'Média Precisão: {sum(prec_avg_list) / len(prec_avg_list)}')
-    # print(f'Média Recall: {sum(rec_avg_list) / len(rec_avg_list)}')
-    # print(f'Média Tempo: {sum(time_avg_list) / len(time_avg_list)}')
-
-    # data = {
-    #     'F1-Score (Avg)': f1_avg,
-    #     'Acurácia (Avg)': accuracy_avg,
-    #     'Precisão (Avg)': precision_avg,
-    #     'Recall (Avg)': recall_avg,
-    #     'Tempo (Avg)': time_avg,
-    #     'F1-Score (Std)': f1_std,
-    #     'Acurácia (Std)': accuracy_std,
-    #     'Precisão (Std)': precision_std,
-    #     'Recall (Std)': recall_std,
-    #     'Tempo (Std)': time_std
-    # }
-
-    # criando txt de parametros
-    # path = f'resultados/{data_name}'
-    # if not os.path.exists(f'resultados/{data_name}'):
-    #     os.makedirs(path)
-    # basics_info = (f'Seed: {seed} | Dataset: {data_name} | K: {n_neighbors} | MFCM Reps: {nFilterRep} | Neighbors: {n_neighbors}')
-    # variables_cut_info = f'Porcentagens de variaveis cortadas: {porcentagemVar}'
-    # os.makedirs(f'resultados/{data_name}/resultado_{len(os.listdir(path)) + 1}')
-    # atualizaTxt(f'resultados/{data_name}/resultado_{len(os.listdir(path))}/parameters.txt', basics_info)
-    # atualizaTxt(f'resultados/{data_name}/resultado_{len(os.listdir(path))}/parameters.txt', variables_cut_info)
-
-    # # criando txt de resultados
-    # atualizaTxt(f'resultados/{data_name}/resultado_{len(os.listdir(path))}/resultados.txt', basics_info)
-    # for _, i in enumerate(result_mfcm):
-    #     var_info = (f'Porcentagem de variaveis cortadas: {porcentagemVar[_]}%')
-    #     metrics_mfcm = (f'Com filtro MFCM - F1 Score: {i[0]} | Tempo: {i[4]}')
-    #     metrics_mutual = (f'Com filtro Mutual - F1 Score: {result_mutual[_][0]} | Tempo: {result_mutual[_][4]}')
-
-    #     atualizaTxt(f'resultados/{data_name}/resultado_{len(os.listdir(path))}/resultados.txt', var_info)
-    #     atualizaTxt(f'resultados/{data_name}/resultado_{len(os.listdir(path))}/resultados.txt', metrics_mfcm)
-    #     atualizaTxt(f'resultados/{data_name}/resultado_{len(os.listdir(path))}/resultados.txt', metrics_mutual)
-    #     atualizaTxt(f'resultados/{data_name}/resultado_{len(os.listdir(path))}/resultados.txt', '')
-
-    # # criando dataframe de resultados
-    # df = pd.DataFrame(data)
-    # df = df.transpose()
-    # df.columns = ['Porcentagem ' + str(i*10) for i in range(len(df.columns))]
-    # df.to_csv(f'resultados/{data_name}/resultado_{len(os.listdir(path))}/mfcm_stats.csv', index=False)
-    # print(df)
 
 if __name__ == "__main__":
 

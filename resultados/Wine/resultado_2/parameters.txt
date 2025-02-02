@@ -1,0 +1,2 @@
+Seed: 42 | Dataset: Wine | K: 5 | MFCM Reps: 10 | Neighbors: 5
+Porcentagens de variaveis cortadas: [0]

@@ -97,6 +97,13 @@ def filter(data, result, numVar, numClasses):
 
     return data
 
+def return_rank(data, result, numClasses):
+
+    resultado_filtro = variance_filter(data, result['bestM'], numClasses)
+    resultado_filtro[0].sort(key=lambda k : k[0])
+
+    return resultado_filtro
+
 def exec_knn(data_train, data_test, target_train, target_test, n_neighbors):
 
     start = time.time()
@@ -205,14 +212,12 @@ def cross_validation(data, target, seed, n_neighbors, n_folds, nFilterRep, nClas
     kfold = StratifiedKFold(n_splits=n_folds, shuffle=True, random_state=seed)
     
     best_result = -1
-    best_data = []
     best_mfcm = []
-
-    inicio = time.time()
+    best_set = []
 
     for i_interno, (train, test) in enumerate(kfold.split(data, target)):
 
-        # print('Split')
+        # print(f'Fold interno: {i_interno}')
 
         if filter_name == 'MFCM':
             if not os.path.exists(f'matrices/{data_name}'):
@@ -223,7 +228,6 @@ def cross_validation(data, target, seed, n_neighbors, n_folds, nFilterRep, nClas
                 mfcm = exec_mfcm_filter(data[train], nFilterRep, nClasses)
                 save_list(mfcm, data_name, i_externo, i_interno)
 
-        # print(f'var: {data[test].shape[1]}')
         numVar = (data[test].shape[1] // 2)
 
         if filter_name == 'MFCM':
@@ -239,35 +243,11 @@ def cross_validation(data, target, seed, n_neighbors, n_folds, nFilterRep, nClas
             best_result = f1
             if filter_name == 'MFCM':
                 best_mfcm = mfcm
-            best_data = (data[train], data[test], target[train], target[test])
+                best_set = data[train]
 
-    fim = time.time()
+    var_rank = return_rank(best_set, best_mfcm, nClasses)
 
-    # print(f'TEMPO DE EXECUÇÃO DA FOLD: {fim - inicio} segundos')
-
-    scores_porcentagem = []
-    data_train, data_test, target_train, target_test = best_data
-
-    for i in porcentagemVar:
-        numVar = int(data.shape[1] * (i/100))
-        print(numVar)
-        # print(f'Porcentagem de variáveis cortadas: {i}%')
-        # print(f'Número de variáveis apos filtro: {data.shape[1] - numVar}')
-
-        if filter_name == 'MFCM':
-            filtered_train = filter(data_train, best_mfcm, numVar, nClasses)
-            filtered_test = filter(data_test, best_mfcm, numVar, nClasses)
-        elif filter_name == 'MUTUAL':
-            filtered_train = filtro_mutual_info(data_train, target_train, numVar)
-            filtered_test = filtro_mutual_info(data_test, target_test, numVar)
-
-        f1, accuracy, precision, recall, tempo = exec_knn(filtered_train, filtered_test, target_train, target_test, n_neighbors)
-
-        scores_porcentagem.append((f1, accuracy, precision, recall, tempo))
-
-    # print(scores_porcentagem)
-
-    return scores_porcentagem
+    return var_rank
 
 def experimento(indexData, n_neighbors, nFilterRep):
 
@@ -275,69 +255,103 @@ def experimento(indexData, n_neighbors, nFilterRep):
 
     dataset = selectDataset(indexData)
 
-    # porcentagemVar = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
-    porcentagemVar = [0, 20]
+    porcentagemVar = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
+    n_folds = 5
+    # porcentagemVar = [0, 20, 50]
 
     data, target, nClasses, data_name = dataset
-
-    kfold = StratifiedKFold(n_splits=5, shuffle=True, random_state=SEED)
+    kfold = StratifiedKFold(n_splits=n_folds, shuffle=True, random_state=SEED)
 
     lista_resultados_mfcm = []
 
     for i_externo, (train, test) in enumerate(kfold.split(data, target)):
-        result_mfcm = cross_validation(data[train], target[train], SEED, n_neighbors, 5, nFilterRep, nClasses, porcentagemVar, 'MFCM', data_name, i_externo)
-        result_mutual = cross_validation(data[train], target[train], SEED, n_neighbors, 5, nFilterRep, nClasses, porcentagemVar, 'MUTUAL', data_name, i_externo)
-        lista_resultados_mfcm.append(result_mfcm)
+        # print(f'Fold externo [{i_externo}]')
 
-    f1_avg, accuracy_avg, precision_avg, recall_avg, time_avg, f1_std, accuracy_std, precision_std, recall_std, time_std = media_desvio_padrao(lista_resultados_mfcm)
+        var_rank = cross_validation(data[train], target[train], SEED, n_neighbors, 5, nFilterRep, nClasses, porcentagemVar, 'MFCM', data_name, i_externo)
+        scores_porcentagem = {}
+
+        for i in porcentagemVar:
+            numVar = int(data.shape[1] * (i/100))
+            # print(numVar)
+            # print(f'Porcentagem de variáveis cortadas: {i}%')
+            # print(f'Número de variáveis apos filtro: {data.shape[1] - numVar}')
+
+            filtered_train = apply_filter(data[train], var_rank, numVar)
+            filtered_test = apply_filter(data[test], var_rank, numVar)
+
+            f1, accuracy, precision, recall, tempo = exec_knn(filtered_train, filtered_test, target[train], target[test], n_neighbors)
+            # print(f'Fold externo [{i_externo}] - F1-Score: {f1}')
+
+            scores_porcentagem[i] = {
+                'f1': f1,
+                'accuracy': accuracy,
+                'precision': precision,
+                'recall': recall,
+                'tempo': tempo
+            }
+
+            # scores_porcentagem.append((f1, accuracy, precision, recall, tempo))
+
+        lista_resultados_mfcm.append(scores_porcentagem)
+
+    media_resultados = {p: {'f1': 0, 'accuracy': 0, 'precision': 0, 'recall': 0, 'tempo': 0} for p in porcentagemVar}
+    desvio_resultados = {p: {'f1': [], 'accuracy': [], 'precision': [], 'recall': [], 'tempo': []} for p in porcentagemVar}
+
+    for p in porcentagemVar:
+        for fold_result in lista_resultados_mfcm:
+            for metric in media_resultados[p]:
+                media_resultados[p][metric] += fold_result[p][metric]
+                desvio_resultados[p][metric].append(fold_result[p][metric])
+        # Tirar a média (dividir pelo número de folds)
+        media_resultados[p] = {k: v / n_folds for k, v in media_resultados[p].items()}
+        desvio_resultados[p] = {k: np.std(v, ddof=1) for k, v in desvio_resultados[p].items()}
 
     data = {
-        'F1-Score (Avg)': f1_avg,
-        'Acurácia (Avg)': accuracy_avg,
-        'Precisão (Avg)': precision_avg,
-        'Recall (Avg)': recall_avg,
-        'Tempo (Avg)': time_avg,
-        'F1-Score (Std)': f1_std,
-        'Acurácia (Std)': accuracy_std,
-        'Precisão (Std)': precision_std,
-        'Recall (Std)': recall_std,
-        'Tempo (Std)': time_std
+        'F1-Score (Avg)': [media_resultados[p]['f1'] for p in porcentagemVar],
+        'Acurácia (Avg)': [media_resultados[p]['accuracy'] for p in porcentagemVar],
+        'Precisão (Avg)': [media_resultados[p]['precision'] for p in porcentagemVar],
+        'Recall (Avg)': [media_resultados[p]['recall'] for p in porcentagemVar],
+        'Tempo (Avg)': [media_resultados[p]['tempo'] for p in porcentagemVar],
+        'F1-Score (Std)': [desvio_resultados[p]['f1'] for p in porcentagemVar],
+        'Acurácia (Std)': [desvio_resultados[p]['accuracy'] for p in porcentagemVar],
+        'Precisão (Std)': [desvio_resultados[p]['precision'] for p in porcentagemVar],
+        'Recall (Std)': [desvio_resultados[p]['recall'] for p in porcentagemVar],
+        'Tempo (Std)': [desvio_resultados[p]['tempo'] for p in porcentagemVar]
     }
 
-    # criando txt de parametros
     path = f'resultados/{data_name}'
-    if not os.path.exists(f'resultados/{data_name}'):
+    if not os.path.exists(path):
         os.makedirs(path)
+
+    result_dir = f'resultados/{data_name}/resultado_{len(os.listdir(path)) + 1}'
+    os.makedirs(result_dir)
+
+    # Salvar parâmetros
     basics_info = (f'Seed: {SEED} | Dataset: {data_name} | K: {n_neighbors} | MFCM Reps: {nFilterRep} | Neighbors: {n_neighbors}')
     variables_cut_info = f'Porcentagens de variaveis cortadas: {porcentagemVar}'
-    os.makedirs(f'resultados/{data_name}/resultado_{len(os.listdir(path)) + 1}')
-    atualizaTxt(f'resultados/{data_name}/resultado_{len(os.listdir(path))}/parameters.txt', basics_info)
-    atualizaTxt(f'resultados/{data_name}/resultado_{len(os.listdir(path))}/parameters.txt', variables_cut_info)
+    atualizaTxt(f'{result_dir}/parameters.txt', basics_info)
+    atualizaTxt(f'{result_dir}/parameters.txt', variables_cut_info)
 
-    # criando txt de resultados
-    atualizaTxt(f'resultados/{data_name}/resultado_{len(os.listdir(path))}/resultados.txt', basics_info)
-    for _, i in enumerate(result_mfcm):
-        var_info = (f'Porcentagem de variaveis cortadas: {porcentagemVar[_]}%')
-        metrics_mfcm = (f'Com filtro MFCM - F1 Score: {i[0]} | Tempo: {i[4]}')
-        metrics_mutual = (f'Com filtro Mutual - F1 Score: {result_mutual[_][0]} | Tempo: {result_mutual[_][4]}')
+    # Salvar resultados detalhados
+    atualizaTxt(f'{result_dir}/resultados.txt', basics_info)
+    for p in porcentagemVar:
+        var_info = f'Porcentagem de variaveis cortadas: {p}%'
+        metrics_mfcm = f'Com filtro MFCM - F1 Score: {media_resultados[p]["f1"]:.4f} ({desvio_resultados[p]["f1"]:.4f}) | Tempo: {media_resultados[p]["tempo"]:.4f} ({desvio_resultados[p]["tempo"]:.4f})'
+        atualizaTxt(f'{result_dir}/resultados.txt', var_info)
+        atualizaTxt(f'{result_dir}/resultados.txt', metrics_mfcm)
+        atualizaTxt(f'{result_dir}/resultados.txt', '')
 
-        atualizaTxt(f'resultados/{data_name}/resultado_{len(os.listdir(path))}/resultados.txt', var_info)
-        atualizaTxt(f'resultados/{data_name}/resultado_{len(os.listdir(path))}/resultados.txt', metrics_mfcm)
-        atualizaTxt(f'resultados/{data_name}/resultado_{len(os.listdir(path))}/resultados.txt', metrics_mutual)
-        atualizaTxt(f'resultados/{data_name}/resultado_{len(os.listdir(path))}/resultados.txt', '')
-
-    # criando dataframe de resultados
-    df = pd.DataFrame(data)
-    df = df.transpose()
-    df.columns = ['Porcentagem ' + str(i*10) for i in range(len(df.columns))]
-    df.to_csv(f'resultados/{data_name}/resultado_{len(os.listdir(path))}/mfcm_stats.csv', index=False)
-    print(df)
+    # Exibir resultados médios
+    for p, metrics in media_resultados.items():
+        print(f"Porcentagem: {p}%")
+        for metric, value in metrics.items():
+            print(f"  {metric}: {value:.4f}")
 
 if __name__ == "__main__":
 
     datasets = [3]
     n_neighbors = 5
-    nRepMFCM = 10
+    nRepMFCM = 5
 
     # experimento(3, n_neighbors, nRepMFCM)
 
