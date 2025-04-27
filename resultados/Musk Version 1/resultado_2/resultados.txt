@@ -1,0 +1,31 @@
+Seed: 42 | Dataset: Musk Version 1 | K: 5 | MFCM Reps: 5 | Neighbors: 5
+Porcentagem de variaveis cortadas: 0%
+Com filtro MFCM - F1 Score: 0.8964 (0.0412) | Tempo: 0.0098 (0.0017)
+
+Porcentagem de variaveis cortadas: 10%
+Com filtro MFCM - F1 Score: 0.9002 (0.0487) | Tempo: 0.0082 (0.0004)
+
+Porcentagem de variaveis cortadas: 20%
+Com filtro MFCM - F1 Score: 0.8894 (0.0403) | Tempo: 0.0078 (0.0004)
+
+Porcentagem de variaveis cortadas: 30%
+Com filtro MFCM - F1 Score: 0.8918 (0.0429) | Tempo: 0.0086 (0.0009)
+
+Porcentagem de variaveis cortadas: 40%
+Com filtro MFCM - F1 Score: 0.8857 (0.0327) | Tempo: 0.0086 (0.0015)
+
+Porcentagem de variaveis cortadas: 50%
+Com filtro MFCM - F1 Score: 0.8834 (0.0269) | Tempo: 0.0086 (0.0011)
+
+Porcentagem de variaveis cortadas: 60%
+Com filtro MFCM - F1 Score: 0.8837 (0.0300) | Tempo: 0.0087 (0.0018)
+
+Porcentagem de variaveis cortadas: 70%
+Com filtro MFCM - F1 Score: 0.9067 (0.0291) | Tempo: 0.0078 (0.0008)
+
+Porcentagem de variaveis cortadas: 80%
+Com filtro MFCM - F1 Score: 0.9385 (0.0187) | Tempo: 0.0084 (0.0009)
+
+Porcentagem de variaveis cortadas: 90%
+Com filtro MFCM - F1 Score: 0.8881 (0.1395) | Tempo: 0.0084 (0.0005)
+

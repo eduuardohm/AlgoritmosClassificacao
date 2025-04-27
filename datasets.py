@@ -103,6 +103,8 @@ def selectDataset(id):
 		dataset_ref = np.array(dataset_ref)
 		dataset = scaler.fit_transform(dataset)
 		nClasses = 2
+
+		print(dataset_ref)
 		
 		print("Dataset selecionado: Musk (Version 1)\n")
 		
@@ -497,3 +499,65 @@ def selectDataset(id):
 		data_ref = np.concatenate((np.repeat(1, n // n_classes), np.repeat(2, n // n_classes), np.repeat(3, n // n_classes)))
 
 		return [synthetic, data_ref, n_classes, "Relação Exponencial"]
+	
+	elif id == 19:
+		dataset_name = 'Ionosphere'
+		dataset = pd.read_csv('datasets/ionosphere.data', header=None)		# Ionosphere | UCI Machine Learning Repository | 34 features | 351 instances
+
+		# dataset_ref = dataset.iloc[:,-1].tolist()
+		# dataset_ref = np.array(dataset_ref)
+		
+		dataset_ref = dataset.iloc[:, -1].map({'g': 1, 'b': 0}).to_numpy()
+		dataset = dataset.drop(dataset.columns[-1], axis=1)
+		dataset = scaler.fit_transform(dataset)
+		nClasses = 2
+
+		print(dataset_ref)
+		
+		print("Dataset selecionado: Ionosphere\n")
+		
+		return (dataset, dataset_ref, nClasses, dataset_name)
+
+	elif id == 20:
+		# Sonar
+		dataset_name = 'Sonar'
+		dataset = pd.read_csv("datasets/sonar.data", sep=",", header=None)
+		dataset_ref = dataset.iloc[:, -1].map({'R': 1, 'M': 0}).to_numpy()
+		
+		dataset = dataset.drop(dataset.columns[-1], axis=1).to_numpy()
+		dataset = scaler.fit_transform(dataset)
+
+		nClasses = 2
+
+		return [dataset, dataset_ref, nClasses, "Sonar Dataset"]
+	
+	elif id == 21:
+		# Zoo
+		dataset_name = 'Zoo'
+		dataset = pd.read_csv("datasets/zoo.data", sep=",", header=None)
+		
+		dataset_ref = (dataset.iloc[:, -1] - 1).to_numpy()
+
+		columns = dataset.columns[[0, -1]] # Remove animal name and class (0, -1 columns)
+		
+		dataset = dataset.drop(columns, axis=1).to_numpy()
+		dataset = scaler.fit_transform(dataset)
+
+		nClasses = 7
+
+		return [dataset, dataset_ref, nClasses, "Zoo Dataset"]
+	
+	elif id == 22:
+		# Heart Statlog
+		dataset = pd.read_csv("datasets/heart-statlog.dat", sep=" ", header=None)
+		dataset_ref = (dataset.iloc[:, -1] - 1).to_numpy()
+		
+		columns = [dataset.columns[-1]]
+
+		dataset = dataset.drop(columns, axis=1).to_numpy()
+		dataset = scaler.fit_transform(dataset)
+
+		nClasses = 2
+		
+
+		return [dataset, dataset_ref, nClasses, "Heart Statlog Dataset"]

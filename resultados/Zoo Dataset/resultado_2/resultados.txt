@@ -1,0 +1,31 @@
+Seed: 42 | Dataset: Zoo Dataset | K: 5 | MFCM Reps: 50 | Neighbors: 5
+Porcentagem de variaveis cortadas: 0%
+Com filtro MFCM - F1 Score: 0.8514 (0.1221) | Acurácia: 0.9319 (0.0718) | Precisão: 0.8522 (0.1287) | Recall: 0.8770 (0.0903) | Tempo: 0.0416 (0.0775)
+
+Porcentagem de variaveis cortadas: 10%
+Com filtro MFCM - F1 Score: 0.8666 (0.0534) | Acurácia: 0.9410 (0.0202) | Precisão: 0.8617 (0.0704) | Recall: 0.8913 (0.0502) | Tempo: 0.0031 (0.0009)
+
+Porcentagem de variaveis cortadas: 20%
+Com filtro MFCM - F1 Score: 0.8489 (0.1017) | Acurácia: 0.9410 (0.0407) | Precisão: 0.8586 (0.0987) | Recall: 0.8690 (0.0914) | Tempo: 0.0035 (0.0003)
+
+Porcentagem de variaveis cortadas: 30%
+Com filtro MFCM - F1 Score: 0.8073 (0.0387) | Acurácia: 0.9210 (0.0266) | Precisão: 0.8086 (0.0283) | Recall: 0.8238 (0.0361) | Tempo: 0.0031 (0.0015)
+
+Porcentagem de variaveis cortadas: 40%
+Com filtro MFCM - F1 Score: 0.6637 (0.0459) | Acurácia: 0.8524 (0.0564) | Precisão: 0.6697 (0.0620) | Recall: 0.7008 (0.0393) | Tempo: 0.0026 (0.0009)
+
+Porcentagem de variaveis cortadas: 50%
+Com filtro MFCM - F1 Score: 0.6018 (0.0544) | Acurácia: 0.8129 (0.0592) | Precisão: 0.6046 (0.0679) | Recall: 0.6452 (0.0319) | Tempo: 0.0027 (0.0004)
+
+Porcentagem de variaveis cortadas: 60%
+Com filtro MFCM - F1 Score: 0.5753 (0.1463) | Acurácia: 0.7824 (0.0557) | Precisão: 0.5681 (0.1791) | Recall: 0.6083 (0.1180) | Tempo: 0.0029 (0.0009)
+
+Porcentagem de variaveis cortadas: 70%
+Com filtro MFCM - F1 Score: 0.3714 (0.0653) | Acurácia: 0.6529 (0.0406) | Precisão: 0.3591 (0.0866) | Recall: 0.4210 (0.0601) | Tempo: 0.0026 (0.0007)
+
+Porcentagem de variaveis cortadas: 80%
+Com filtro MFCM - F1 Score: 0.3469 (0.0612) | Acurácia: 0.6333 (0.0312) | Precisão: 0.3453 (0.0695) | Recall: 0.4012 (0.0634) | Tempo: 0.0029 (0.0006)
+
+Porcentagem de variaveis cortadas: 90%
+Com filtro MFCM - F1 Score: 0.2178 (0.0811) | Acurácia: 0.4852 (0.1140) | Precisão: 0.2100 (0.0816) | Recall: 0.2762 (0.0888) | Tempo: 0.0031 (0.0007)
+

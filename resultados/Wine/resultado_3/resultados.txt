@@ -1,0 +1,31 @@
+Seed: 42 | Dataset: Wine | K: 5 | MFCM Reps: 5 | Neighbors: 5
+Porcentagem de variaveis cortadas: 0%
+Com filtro MFCM - F1 Score: 0.9721 (0.0200) | Tempo: 0.0028 (0.0002)
+
+Porcentagem de variaveis cortadas: 10%
+Com filtro MFCM - F1 Score: 0.9504 (0.0228) | Tempo: 0.0027 (0.0007)
+
+Porcentagem de variaveis cortadas: 20%
+Com filtro MFCM - F1 Score: 0.9132 (0.0519) | Tempo: 0.0026 (0.0006)
+
+Porcentagem de variaveis cortadas: 30%
+Com filtro MFCM - F1 Score: 0.9114 (0.0605) | Tempo: 0.0021 (0.0003)
+
+Porcentagem de variaveis cortadas: 40%
+Com filtro MFCM - F1 Score: 0.8798 (0.0600) | Tempo: 0.0026 (0.0006)
+
+Porcentagem de variaveis cortadas: 50%
+Com filtro MFCM - F1 Score: 0.8738 (0.0653) | Tempo: 0.0026 (0.0008)
+
+Porcentagem de variaveis cortadas: 60%
+Com filtro MFCM - F1 Score: 0.8673 (0.0198) | Tempo: 0.0023 (0.0005)
+
+Porcentagem de variaveis cortadas: 70%
+Com filtro MFCM - F1 Score: 0.7781 (0.0806) | Tempo: 0.0018 (0.0007)
+
+Porcentagem de variaveis cortadas: 80%
+Com filtro MFCM - F1 Score: 0.7060 (0.1142) | Tempo: 0.0023 (0.0005)
+
+Porcentagem de variaveis cortadas: 90%
+Com filtro MFCM - F1 Score: 0.5967 (0.1221) | Tempo: 0.0025 (0.0007)
+

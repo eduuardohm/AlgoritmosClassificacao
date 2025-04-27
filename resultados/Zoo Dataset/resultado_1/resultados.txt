@@ -1,0 +1,31 @@
+Seed: 42 | Dataset: Zoo Dataset | K: 5 | MFCM Reps: 50 | Neighbors: 5
+Porcentagem de variaveis cortadas: 0%
+Com filtro MFCM - F1 Score: 0.8514 (0.1221) | Tempo: 0.0426 (0.0796)
+
+Porcentagem de variaveis cortadas: 10%
+Com filtro MFCM - F1 Score: 0.8666 (0.0534) | Tempo: 0.0025 (0.0009)
+
+Porcentagem de variaveis cortadas: 20%
+Com filtro MFCM - F1 Score: 0.8489 (0.1017) | Tempo: 0.0027 (0.0012)
+
+Porcentagem de variaveis cortadas: 30%
+Com filtro MFCM - F1 Score: 0.8073 (0.0387) | Tempo: 0.0026 (0.0006)
+
+Porcentagem de variaveis cortadas: 40%
+Com filtro MFCM - F1 Score: 0.6637 (0.0459) | Tempo: 0.0031 (0.0019)
+
+Porcentagem de variaveis cortadas: 50%
+Com filtro MFCM - F1 Score: 0.6018 (0.0544) | Tempo: 0.0024 (0.0012)
+
+Porcentagem de variaveis cortadas: 60%
+Com filtro MFCM - F1 Score: 0.5753 (0.1463) | Tempo: 0.0024 (0.0005)
+
+Porcentagem de variaveis cortadas: 70%
+Com filtro MFCM - F1 Score: 0.3714 (0.0653) | Tempo: 0.0030 (0.0010)
+
+Porcentagem de variaveis cortadas: 80%
+Com filtro MFCM - F1 Score: 0.3469 (0.0612) | Tempo: 0.0026 (0.0009)
+
+Porcentagem de variaveis cortadas: 90%
+Com filtro MFCM - F1 Score: 0.2178 (0.0811) | Tempo: 0.0023 (0.0005)
+

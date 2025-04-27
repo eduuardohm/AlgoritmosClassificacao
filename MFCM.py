@@ -48,18 +48,25 @@ def MFCM(data, centers, parM):
 
   end = timer()
 
-  resp = [J, L, Ubefore, count, end - start, memb]
+  # -------------- Calcular Z, B, T, R --------------
+  z = overallCentroid(data)
+  B = computeBj(Ubefore, data, P, z, parM)
+  T = computeTj(Ubefore, data, z, parM)
+  R = computeRj(B, T)
+  # -------------------------------------------------
+
+  resp = [J, L, Ubefore, count, end - start, memb, R]
+
+  # print(f'B: {B}')
 
   return resp
 	
 
 def initializePrototypes(data,centers):
+  # Modificar essa função (acho que pode ser mais eficiente)
  
   nVar = data.shape[1]
   nProt = len(centers)
-  
-  P = np.arange(nProt * nVar)
-  P = P.reshape((nProt, nVar))
   
   P = np.zeros((nProt, nVar), dtype=np.float64)
   
@@ -243,6 +250,37 @@ def computeAij(memberships):
       M[j,k] = M[j,k]/soma
 
   return M
+
+def computeBj(U, data, P, z, parM):
+    nVar = data.shape[1]
+    nProt = P.shape[0]
+    Bj = np.zeros(nVar, dtype=np.float64)
+
+    for j in range(nVar):
+        for i in range(nProt):
+            y_ij = P[i, j]  # centróide do cluster i para a variável j
+            Bj[j] += np.sum((U[j][:, i] ** parM) * ((y_ij - z[j]) ** 2))
+
+    return Bj
+
+def computeTj(U, data, z, parM):
+    
+    nObj, nVar = data.shape
+    nProt = U[0].shape[1]
+    Tj = np.zeros(nVar, dtype=np.float64)
+
+    for j in range(nVar):
+        for i in range(nObj):
+            for k in range(nProt):
+                Tj[j] += (U[j][i, k] ** parM) * ((data[i, j] - z[j]) ** 2)
+
+    return Tj
+  
+def computeRj(Bj, Tj):
+    return Bj / Tj    # Cuidado divisão por zero
+
+def overallCentroid(data):
+    return np.mean(data, axis=0)
 
 
 def getPartition(memberships):

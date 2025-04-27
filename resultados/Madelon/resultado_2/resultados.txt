@@ -1,0 +1,31 @@
+Seed: 42 | Dataset: Madelon | K: 5 | MFCM Reps: 5 | Neighbors: 5
+Porcentagem de variaveis cortadas: 0%
+Com filtro MFCM - F1 Score: 0.6369 (0.0104) | Tempo: 0.0854 (0.0095)
+
+Porcentagem de variaveis cortadas: 10%
+Com filtro MFCM - F1 Score: 0.6484 (0.0052) | Tempo: 0.0879 (0.0154)
+
+Porcentagem de variaveis cortadas: 20%
+Com filtro MFCM - F1 Score: 0.6669 (0.0125) | Tempo: 0.0827 (0.0082)
+
+Porcentagem de variaveis cortadas: 30%
+Com filtro MFCM - F1 Score: 0.6733 (0.0127) | Tempo: 0.0764 (0.0046)
+
+Porcentagem de variaveis cortadas: 40%
+Com filtro MFCM - F1 Score: 0.6860 (0.0237) | Tempo: 0.0795 (0.0136)
+
+Porcentagem de variaveis cortadas: 50%
+Com filtro MFCM - F1 Score: 0.7027 (0.0170) | Tempo: 0.0741 (0.0067)
+
+Porcentagem de variaveis cortadas: 60%
+Com filtro MFCM - F1 Score: 0.7140 (0.0157) | Tempo: 0.0701 (0.0050)
+
+Porcentagem de variaveis cortadas: 70%
+Com filtro MFCM - F1 Score: 0.7589 (0.0098) | Tempo: 0.0718 (0.0062)
+
+Porcentagem de variaveis cortadas: 80%
+Com filtro MFCM - F1 Score: 0.7894 (0.0153) | Tempo: 0.0684 (0.0074)
+
+Porcentagem de variaveis cortadas: 90%
+Com filtro MFCM - F1 Score: 0.8911 (0.0131) | Tempo: 0.0686 (0.0021)
+

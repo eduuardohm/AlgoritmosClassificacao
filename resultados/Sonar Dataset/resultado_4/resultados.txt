@@ -1,0 +1,31 @@
+Seed: 42 | Dataset: Sonar Dataset | K: 5 | MFCM Reps: 50 | Neighbors: 5
+Porcentagem de variaveis cortadas: 0%
+Com filtro MFCM - F1 Score: 0.8087 (0.0402) | Acurácia: 0.8124 (0.0395) | Precisão: 0.8211 (0.0442) | Recall: 0.8072 (0.0399) | Tempo: 0.0144 (0.0135)
+
+Porcentagem de variaveis cortadas: 10%
+Com filtro MFCM - F1 Score: 0.8131 (0.0372) | Acurácia: 0.8175 (0.0348) | Precisão: 0.8291 (0.0312) | Recall: 0.8121 (0.0356) | Tempo: 0.0146 (0.0225)
+
+Porcentagem de variaveis cortadas: 20%
+Com filtro MFCM - F1 Score: 0.7982 (0.0502) | Acurácia: 0.8033 (0.0476) | Precisão: 0.8165 (0.0429) | Recall: 0.7985 (0.0496) | Tempo: 0.0045 (0.0005)
+
+Porcentagem de variaveis cortadas: 30%
+Com filtro MFCM - F1 Score: 0.8200 (0.0251) | Acurácia: 0.8223 (0.0258) | Precisão: 0.8276 (0.0302) | Recall: 0.8192 (0.0248) | Tempo: 0.0056 (0.0024)
+
+Porcentagem de variaveis cortadas: 40%
+Com filtro MFCM - F1 Score: 0.8152 (0.0386) | Acurácia: 0.8177 (0.0384) | Precisão: 0.8215 (0.0416) | Recall: 0.8137 (0.0376) | Tempo: 0.0078 (0.0056)
+
+Porcentagem de variaveis cortadas: 50%
+Com filtro MFCM - F1 Score: 0.7809 (0.0549) | Acurácia: 0.7882 (0.0478) | Precisão: 0.8055 (0.0398) | Recall: 0.7825 (0.0524) | Tempo: 0.0040 (0.0005)
+
+Porcentagem de variaveis cortadas: 60%
+Com filtro MFCM - F1 Score: 0.6919 (0.0556) | Acurácia: 0.7019 (0.0440) | Precisão: 0.7105 (0.0359) | Recall: 0.6960 (0.0496) | Tempo: 0.0043 (0.0006)
+
+Porcentagem de variaveis cortadas: 70%
+Com filtro MFCM - F1 Score: 0.6408 (0.0508) | Acurácia: 0.6492 (0.0475) | Precisão: 0.6588 (0.0558) | Recall: 0.6474 (0.0535) | Tempo: 0.0042 (0.0006)
+
+Porcentagem de variaveis cortadas: 80%
+Com filtro MFCM - F1 Score: 0.6181 (0.0355) | Acurácia: 0.6249 (0.0292) | Precisão: 0.6262 (0.0313) | Recall: 0.6218 (0.0353) | Tempo: 0.0640 (0.1151)
+
+Porcentagem de variaveis cortadas: 90%
+Com filtro MFCM - F1 Score: 0.5110 (0.0486) | Acurácia: 0.5286 (0.0322) | Precisão: 0.5193 (0.0399) | Recall: 0.5204 (0.0386) | Tempo: 0.0049 (0.0058)
+

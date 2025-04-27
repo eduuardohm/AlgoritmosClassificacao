@@ -5,7 +5,7 @@ def sum_filter(data, U, nClusters):
     nVar = data.shape[1]
 
     for i in range(0, nVar):
-        aTotal = 0 # Relevância total
+        aTotal = [] # Relevância total
         nObj = data.shape[0]
 
         for j in range(0, nClusters):  
@@ -17,8 +17,10 @@ def sum_filter(data, U, nClusters):
             a /= nObj # Relevância em relação ao cluster j
             aTotal += a
 
-        aTotal = round(aTotal * 100, 2)
-        V.append(aTotal)
+
+        aTotal = np.mean(aTotal)
+        aTotal = round(aTotal, 5)
+        V.append((aTotal, i))
     
     return (V, 'Filtro por Somatório')
 

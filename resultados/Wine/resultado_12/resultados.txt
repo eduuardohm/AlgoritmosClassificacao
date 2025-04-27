@@ -1,0 +1,31 @@
+Seed: 42 | Dataset: Wine | K: 5 | MFCM Reps: 2 | Neighbors: 5
+Porcentagem de variaveis cortadas: 0%
+Com filtro MFCM (usando ARI como criterio) - F1 Score: 0.9721 (0.0200) | Acurácia: 0.9717 (0.0202) | Precisão: 0.9703 (0.0210) | Recall: 0.9765 (0.0169) | Tempo: 0.0029 (0.0005)
+
+Porcentagem de variaveis cortadas: 10%
+Com filtro MFCM (usando ARI como criterio) - F1 Score: 0.9452 (0.0338) | Acurácia: 0.9438 (0.0340) | Precisão: 0.9471 (0.0305) | Recall: 0.9522 (0.0285) | Tempo: 0.0022 (0.0008)
+
+Porcentagem de variaveis cortadas: 20%
+Com filtro MFCM (usando ARI como criterio) - F1 Score: 0.9399 (0.0402) | Acurácia: 0.9386 (0.0412) | Precisão: 0.9424 (0.0364) | Recall: 0.9468 (0.0352) | Tempo: 0.0024 (0.0006)
+
+Porcentagem de variaveis cortadas: 30%
+Com filtro MFCM (usando ARI como criterio) - F1 Score: 0.9285 (0.0764) | Acurácia: 0.9275 (0.0775) | Precisão: 0.9334 (0.0706) | Recall: 0.9373 (0.0677) | Tempo: 0.0024 (0.0005)
+
+Porcentagem de variaveis cortadas: 40%
+Com filtro MFCM (usando ARI como criterio) - F1 Score: 0.9392 (0.0793) | Acurácia: 0.9387 (0.0770) | Precisão: 0.9486 (0.0596) | Recall: 0.9476 (0.0661) | Tempo: 0.0024 (0.0004)
+
+Porcentagem de variaveis cortadas: 50%
+Com filtro MFCM (usando ARI como criterio) - F1 Score: 0.9408 (0.0499) | Acurácia: 0.9386 (0.0534) | Precisão: 0.9470 (0.0388) | Recall: 0.9476 (0.0458) | Tempo: 0.0019 (0.0007)
+
+Porcentagem de variaveis cortadas: 60%
+Com filtro MFCM (usando ARI como criterio) - F1 Score: 0.9178 (0.0700) | Acurácia: 0.9162 (0.0708) | Precisão: 0.9249 (0.0607) | Recall: 0.9240 (0.0646) | Tempo: 0.0022 (0.0003)
+
+Porcentagem de variaveis cortadas: 70%
+Com filtro MFCM (usando ARI como criterio) - F1 Score: 0.8435 (0.1213) | Acurácia: 0.8438 (0.1152) | Precisão: 0.8526 (0.1188) | Recall: 0.8586 (0.1066) | Tempo: 0.0021 (0.0002)
+
+Porcentagem de variaveis cortadas: 80%
+Com filtro MFCM (usando ARI como criterio) - F1 Score: 0.7679 (0.1523) | Acurácia: 0.7763 (0.1434) | Precisão: 0.7925 (0.1493) | Recall: 0.7801 (0.1373) | Tempo: 0.0024 (0.0004)
+
+Porcentagem de variaveis cortadas: 90%
+Com filtro MFCM (usando ARI como criterio) - F1 Score: 0.6833 (0.1254) | Acurácia: 0.6913 (0.1311) | Precisão: 0.7103 (0.1288) | Recall: 0.6846 (0.1293) | Tempo: 0.0020 (0.0004)
+

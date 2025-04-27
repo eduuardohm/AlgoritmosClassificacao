@@ -1,0 +1,31 @@
+Seed: 42 | Dataset: Ionosphere | K: 5 | MFCM Reps: 1 | Neighbors: 5
+Porcentagem de variaveis cortadas: 0%
+Com filtro MFCM - F1 Score: 0.7992 (0.0285) | Tempo: 0.0071 (0.0012)
+
+Porcentagem de variaveis cortadas: 10%
+Com filtro MFCM - F1 Score: 0.8061 (0.0479) | Tempo: 0.0072 (0.0003)
+
+Porcentagem de variaveis cortadas: 20%
+Com filtro MFCM - F1 Score: 0.8070 (0.0354) | Tempo: 0.0073 (0.0006)
+
+Porcentagem de variaveis cortadas: 30%
+Com filtro MFCM - F1 Score: 0.8452 (0.0232) | Tempo: 0.0063 (0.0007)
+
+Porcentagem de variaveis cortadas: 40%
+Com filtro MFCM - F1 Score: 0.8496 (0.0218) | Tempo: 0.0064 (0.0010)
+
+Porcentagem de variaveis cortadas: 50%
+Com filtro MFCM - F1 Score: 0.8534 (0.0226) | Tempo: 0.0067 (0.0007)
+
+Porcentagem de variaveis cortadas: 60%
+Com filtro MFCM - F1 Score: 0.8753 (0.0193) | Tempo: 0.0041 (0.0002)
+
+Porcentagem de variaveis cortadas: 70%
+Com filtro MFCM - F1 Score: 0.8465 (0.0362) | Tempo: 0.0035 (0.0007)
+
+Porcentagem de variaveis cortadas: 80%
+Com filtro MFCM - F1 Score: 0.8677 (0.0341) | Tempo: 0.0037 (0.0006)
+
+Porcentagem de variaveis cortadas: 90%
+Com filtro MFCM - F1 Score: 0.8509 (0.0557) | Tempo: 0.0036 (0.0006)
+

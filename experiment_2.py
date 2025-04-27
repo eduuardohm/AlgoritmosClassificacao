@@ -8,7 +8,7 @@ from filters import *
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn import preprocessing
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import f1_score, accuracy_score, precision_score, recall_score
+from sklearn.metrics import adjusted_rand_score, f1_score, accuracy_score, precision_score, recall_score
 from sklearn.model_selection import StratifiedKFold, train_test_split
 from sklearn.model_selection import cross_val_score
 from datasets import selectDataset
@@ -27,11 +27,14 @@ random.seed(42)
 
 scaler = StandardScaler()
 
-def execute(nRep, dataset, centersAll):
+def execute(nRep, dataset, centersAll, label):
     Jmin = 2147483647	# int_max do R
+    ARI_max = -1
     bestL = 0			# melhor valor de L_resp
     bestM = 0			# melhor valor de M_resp
     best_centers = 0
+    best_J = 0
+    R = 0
 
     for r in range(nRep):
         # print(f'MFCM rep: {r}')
@@ -42,41 +45,43 @@ def execute(nRep, dataset, centersAll):
         J = resp[0]
         L_resp = resp[1]
         M_resp = resp[2]
+        R = resp[6]
 
-        if (Jmin > J):
-            Jmin = J
+        ari = adjusted_rand_score(label, L_resp)
+
+        if ari > ARI_max:
+            ARI_max = ari
             bestL = L_resp
             bestM = M_resp
             best_centers = centers
+            bestR = R
+            best_J = J
 
-    dict = {'Jmin': Jmin, 'bestL': bestL, 'bestM': bestM, 'best_centers': centersAll}
+        # if (Jmin > J):
+        #     Jmin = J
+        #     bestL = L_resp
+        #     bestM = M_resp
+        #     best_centers = centers
+        #     bestR = R
+
+    result = {'ARI': ARI_max, 'Jmin': Jmin, 'bestL': bestL, 'bestM': bestM, 'best_centers': centersAll, 'bestR': bestR}
     # Retorna os centers de todas as iterações para o KMeans (mudar para criar uma nova lista exclusiva para o KMeans)
 
-    return dict
+    return result
 
-def exec_mfcm_filter(data, nRep, nClusters):
-    ## Inicializando variáveis
-    result = {}
-    Jmin = 2147483647
-    centers = 0
-
+# Pode ser que essa função não seja mais necessária, pois a 'execute' já retorna o melhor resultado (avaliar)
+def exec_mfcm_filter(data, nRep, nClusters, label):
     nObj = len(data)
-
     centersMC = np.zeros((nRep, nClusters))
 
     for c in range(nRep):
         centersMC[c] = random.sample(range(1, nObj), nClusters)
 
-    clustering = execute(nRep, data, centersMC)
+    clustering = execute(nRep, data, centersMC, label)
 
-    if clustering['Jmin'] < Jmin:
-        Jmin = clustering['Jmin']
-        result = clustering
-    centers = clustering['best_centers']
+    return clustering
 
-    return result
-
-def run_filter(dataset, result, numVar, numClasses):
+def run_filter(dataset, result, numVar, numClasses):        # Não é mais utilizada
 	
     data = np.vstack((dataset[0], dataset[1]))
     target = np.hstack((dataset[2], dataset[3]))
@@ -90,7 +95,7 @@ def run_filter(dataset, result, numVar, numClasses):
 
 def filter(data, result, numVar, numClasses):
 
-    resultado_filtro = variance_filter(data, result['bestM'], numClasses)
+    resultado_filtro = sum_filter(data, result['bestM'], numClasses)
     resultado_filtro[0].sort(key=lambda k : k[0])
 
     data = apply_filter(data, resultado_filtro, numVar)
@@ -99,7 +104,7 @@ def filter(data, result, numVar, numClasses):
 
 def return_rank(data, result, numClasses):
 
-    resultado_filtro = variance_filter(data, result['bestM'], numClasses)
+    resultado_filtro = sum_filter(data, result['bestM'], numClasses)
     resultado_filtro[0].sort(key=lambda k : k[0])
 
     return resultado_filtro
@@ -207,6 +212,17 @@ def media_desvio_padrao(lista):
 
     return f1_avg, accuracy_avg, precision_avg, recall_avg, time_avg, f1_std, accuracy_std, precision_std, recall_std, time_std
 
+def heterogeneity_filter(R):
+    V = []
+    nVar = len(R)
+    for i in range(nVar):
+        score = round(R[i], 5)  # arredonda para 5 casas decimais
+        V.append((score, i))
+    
+    # Ordena a lista pela pontuação (score)
+    V.sort(key=lambda x: x[0])
+    return (V, 'Filtro por Heterogeneidade')
+
 def cross_validation(data, target, seed, n_neighbors, n_folds, nFilterRep, nClasses, porcentagemVar, filter_name, data_name, i_externo):
 
     kfold = StratifiedKFold(n_splits=n_folds, shuffle=True, random_state=seed)
@@ -217,16 +233,18 @@ def cross_validation(data, target, seed, n_neighbors, n_folds, nFilterRep, nClas
 
     for i_interno, (train, test) in enumerate(kfold.split(data, target)):
 
-        # print(f'Fold interno: {i_interno}')
+        print(f'Fold interno: {i_interno}')
 
-        if filter_name == 'MFCM':
-            if not os.path.exists(f'matrices/{data_name}'):
-                os.makedirs(f'matrices/{data_name}')
-            if os.path.exists(f'matrices/{data_name}/lista_{i_externo}{i_interno}.pkl'):
-                mfcm = load_list(data_name, i_externo, i_interno)
-            else:
-                mfcm = exec_mfcm_filter(data[train], nFilterRep, nClasses)
-                save_list(mfcm, data_name, i_externo, i_interno)
+        # if filter_name == 'MFCM':
+        #     if not os.path.exists(f'matrices/{data_name}'):
+        #         os.makedirs(f'matrices/{data_name}')
+        #     if os.path.exists(f'matrices/{data_name}/lista_{i_externo}{i_interno}.pkl'):
+        #         mfcm = load_list(data_name, i_externo, i_interno)
+        #     else:
+        #         mfcm = exec_mfcm_filter(data[train], nFilterRep, nClasses)
+        #         save_list(mfcm, data_name, i_externo, i_interno)
+
+        mfcm = exec_mfcm_filter(data[train], nFilterRep, nClasses, target[train])
 
         numVar = (data[test].shape[1] // 2)
 
@@ -245,7 +263,11 @@ def cross_validation(data, target, seed, n_neighbors, n_folds, nFilterRep, nClas
                 best_mfcm = mfcm
                 best_set = data[train]
 
-    var_rank = return_rank(best_set, best_mfcm, nClasses)
+    # Rank utilizando a métrica R
+    var_rank = heterogeneity_filter(best_mfcm['bestR'])
+    # print(f'Ranking de variáveis: {var_rank}')
+
+    # var_rank = return_rank(best_set, best_mfcm, nClasses)
 
     return var_rank
 
@@ -265,7 +287,7 @@ def experimento(indexData, n_neighbors, nFilterRep):
     lista_resultados_mfcm = []
 
     for i_externo, (train, test) in enumerate(kfold.split(data, target)):
-        # print(f'Fold externo [{i_externo}]')
+        print(f'Fold externo [{i_externo}]')
 
         var_rank = cross_validation(data[train], target[train], SEED, n_neighbors, 5, nFilterRep, nClasses, porcentagemVar, 'MFCM', data_name, i_externo)
         scores_porcentagem = {}
@@ -336,7 +358,15 @@ def experimento(indexData, n_neighbors, nFilterRep):
     atualizaTxt(f'{result_dir}/resultados.txt', basics_info)
     for p in porcentagemVar:
         var_info = f'Porcentagem de variaveis cortadas: {p}%'
-        metrics_mfcm = f'Com filtro MFCM - F1 Score: {media_resultados[p]["f1"]:.4f} ({desvio_resultados[p]["f1"]:.4f}) | Tempo: {media_resultados[p]["tempo"]:.4f} ({desvio_resultados[p]["tempo"]:.4f})'
+        # metrics_mfcm = f'Com filtro MFCM - F1 Score: {media_resultados[p]["f1"]:.4f} ({desvio_resultados[p]["f1"]:.4f}) | Tempo: {media_resultados[p]["tempo"]:.4f} ({desvio_resultados[p]["tempo"]:.4f})'
+        metrics_mfcm = (
+            f'Com filtro MFCM (usando ARI como criterio) - '
+            f'F1 Score: {media_resultados[p]["f1"]:.4f} ({desvio_resultados[p]["f1"]:.4f}) | '
+            f'Acurácia: {media_resultados[p]["accuracy"]:.4f} ({desvio_resultados[p]["accuracy"]:.4f}) | '
+            f'Precisão: {media_resultados[p]["precision"]:.4f} ({desvio_resultados[p]["precision"]:.4f}) | '
+            f'Recall: {media_resultados[p]["recall"]:.4f} ({desvio_resultados[p]["recall"]:.4f}) | '
+            f'Tempo: {media_resultados[p]["tempo"]:.4f} ({desvio_resultados[p]["tempo"]:.4f})'
+        )
         atualizaTxt(f'{result_dir}/resultados.txt', var_info)
         atualizaTxt(f'{result_dir}/resultados.txt', metrics_mfcm)
         atualizaTxt(f'{result_dir}/resultados.txt', '')
@@ -351,7 +381,7 @@ if __name__ == "__main__":
 
     datasets = [3]
     n_neighbors = 5
-    nRepMFCM = 5
+    nRepMFCM = 50
 
     # experimento(3, n_neighbors, nRepMFCM)
 

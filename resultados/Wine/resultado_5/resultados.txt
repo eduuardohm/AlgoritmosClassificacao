@@ -1,0 +1,31 @@
+Seed: 42 | Dataset: Wine | K: 5 | MFCM Reps: 50 | Neighbors: 5
+Porcentagem de variaveis cortadas: 0%
+Com filtro MFCM - F1 Score: 0.9721 (0.0200) | Acur�cia: 0.9717 (0.0202) | Precis�o: 0.9703 (0.0210) | Recall: 0.9765 (0.0169) | Tempo: 0.0028 (0.0004)
+
+Porcentagem de variaveis cortadas: 10%
+Com filtro MFCM - F1 Score: 0.9346 (0.0242) | Acur�cia: 0.9327 (0.0245) | Precis�o: 0.9359 (0.0191) | Recall: 0.9435 (0.0217) | Tempo: 0.0024 (0.0009)
+
+Porcentagem de variaveis cortadas: 20%
+Com filtro MFCM - F1 Score: 0.9233 (0.0306) | Acur�cia: 0.9213 (0.0307) | Precis�o: 0.9260 (0.0280) | Recall: 0.9343 (0.0260) | Tempo: 0.0026 (0.0005)
+
+Porcentagem de variaveis cortadas: 30%
+Com filtro MFCM - F1 Score: 0.9452 (0.0395) | Acur�cia: 0.9441 (0.0393) | Precis�o: 0.9469 (0.0367) | Recall: 0.9524 (0.0337) | Tempo: 0.0028 (0.0010)
+
+Porcentagem de variaveis cortadas: 40%
+Com filtro MFCM - F1 Score: 0.9348 (0.0489) | Acur�cia: 0.9325 (0.0519) | Precis�o: 0.9340 (0.0505) | Recall: 0.9413 (0.0461) | Tempo: 0.0022 (0.0004)
+
+Porcentagem de variaveis cortadas: 50%
+Com filtro MFCM - F1 Score: 0.9290 (0.0491) | Acur�cia: 0.9270 (0.0518) | Precis�o: 0.9290 (0.0505) | Recall: 0.9365 (0.0459) | Tempo: 0.0021 (0.0002)
+
+Porcentagem de variaveis cortadas: 60%
+Com filtro MFCM - F1 Score: 0.9508 (0.0516) | Acur�cia: 0.9492 (0.0551) | Precis�o: 0.9487 (0.0535) | Recall: 0.9556 (0.0491) | Tempo: 0.0024 (0.0006)
+
+Porcentagem de variaveis cortadas: 70%
+Com filtro MFCM - F1 Score: 0.9522 (0.0287) | Acur�cia: 0.9495 (0.0311) | Precis�o: 0.9531 (0.0280) | Recall: 0.9556 (0.0284) | Tempo: 0.0022 (0.0006)
+
+Porcentagem de variaveis cortadas: 80%
+Com filtro MFCM - F1 Score: 0.9228 (0.0367) | Acur�cia: 0.9213 (0.0367) | Precis�o: 0.9236 (0.0344) | Recall: 0.9324 (0.0335) | Tempo: 0.0021 (0.0002)
+
+Porcentagem de variaveis cortadas: 90%
+Com filtro MFCM - F1 Score: 0.9057 (0.0251) | Acur�cia: 0.9043 (0.0259) | Precis�o: 0.9096 (0.0231) | Recall: 0.9142 (0.0272) | Tempo: 0.0023 (0.0005)
+
