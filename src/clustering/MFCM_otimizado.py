@@ -3,9 +3,12 @@
 
 
 import numpy as np
+from timeit import default_timer as timer
 
+def MFCM_otimizado(data, centers, parM):
 
-def MFCM(data, centers, parM):
+    start = timer()
+    
     max_iteration = 100
     J = np.iinfo(np.int32).max
     count = 0
@@ -25,141 +28,87 @@ def MFCM(data, centers, parM):
     M = np.ones((len(centers), data.shape[1]))
     memb = aggregate_matrix(Ubefore, M)
     L = get_partition(memb)
+
+    end = timer()
+
+    # -------------- Calcular Z, B, T, R --------------
+    z = overallCentroid(data)
+    B = computeBj(Ubefore, data, P, z, parM)
+    T = computeTj(Ubefore, data, z, parM)
+    R = computeRj(B, T)
+    # -------------------------------------------------
     
-    result = [J, L, memb, count, 0]
+    result = [J, L, Ubefore, count, end - start, memb, R]
+
     return result
 
 def initialize_prototypes(data, centers):
     return np.array([data[c] for c in centers])
 
 # def update_prototypes(data, memberships, parM):
-#     nObj, nVar = data.shape
-#     nProt = memberships[0].shape[1]
+#     # nObj = data.shape[0]  # Number of objects
+#     nVar = data.shape[1]  # Number of variables
+#     nProt = memberships[0].shape[1]  # Number of prototypes
 #     P = np.zeros((nProt, nVar))
-    
 #     for i in range(nVar):
-#         for k in range(nProt):
-#             s = sum((memberships[i][:, k] ** parM) * data[:, i])
-#             ss = sum(memberships[i][:, k] ** parM)
-#             P[k, i] = s / ss
-    
+#         membership = memberships[i]  # Shape: (nObj, nProt)
+#         weighted_memberships = membership ** parM  # Shape: (nObj, nProt)
+#         numerator = np.sum(data[:, i, np.newaxis] * weighted_memberships, axis=0)  # Shape: (nProt,)
+#         denominator = np.sum(weighted_memberships, axis=0)  # Shape: (nProt,)
+#         P[:, i] = numerator / denominator
 #     return P
+
 def update_prototypes(data, memberships, parM):
-    # nObj = data.shape[0]  # Number of objects
-    nVar = data.shape[1]  # Number of variables
-    nProt = memberships[0].shape[1]  # Number of prototypes
-    P = np.zeros((nProt, nVar))
-    for i in range(nVar):
-        membership = memberships[i]  # Shape: (nObj, nProt)
-        weighted_memberships = membership ** parM  # Shape: (nObj, nProt)
-        numerator = np.sum(data[:, i, np.newaxis] * weighted_memberships, axis=0)  # Shape: (nProt,)
-        denominator = np.sum(weighted_memberships, axis=0)  # Shape: (nProt,)
-        P[:, i] = numerator / denominator
+
+    U = np.stack(memberships)               # → (nVar, nObj, nProt)
+    W = U ** parM                           # → pesos elevados a m
+
+    data_T = data.T[:, :, None]             # → (nVar, nObj, 1)
+
+    numer = np.sum(W * data_T, axis=1)      # → (nVar, nProt)
+    denom = np.sum(W, axis=1)               # → (nVar, nProt)
+    P = (numer / denom).T                   # → (nProt, nVar)
+
     return P
 
-# def update_distances(data, prototypes):
-#     nObj, nVar = data.shape
-#     nProt = prototypes.shape[0]
-#     D = []
-    
-#     for i in range(nVar):
-#         Dvar = np.zeros((nObj, nProt))
-#         for j in range(nObj):
-#             for k in range(nProt):
-#                 Dvar[j, k] = (data[j, i] - prototypes[k, i]) ** 2
-#         D.append(Dvar)
-    
-#     return D
 def update_distances(data, prototypes):
-    nObj = data.shape[0]  # Number of objects
-    nProt = prototypes.shape[0]  # Number of prototypes
-    nVar = data.shape[1]  # Number of variables
+    diff = data[:, np.newaxis, :] - prototypes[np.newaxis, :, :]  # (nObj, nProt, nVar)
+    D_full = diff ** 2  
 
-    # Initialize the distance array
-    D = np.zeros((nVar, nObj, nProt))
-    for i in range(nVar):
-        # Compute the squared differences between data and prototypes for the i-th variable
-        diff = data[:, i, np.newaxis] - prototypes[np.newaxis, :, i]
-        distance = diff ** 2.0
-
-        # Combine the distance and weighted sum
-        D[i] = distance
+    D = D_full.transpose(2, 0, 1)
 
     return D
 
-# def update_membership(distances, parM):
-#     nObj, nProt = distances[0].shape
-#     nVar = len(distances)
-#     U = []
-    
-#     for v in range(nVar):
-#         Uvar = np.zeros((nObj, nProt))
-#         for i in range(nObj):
-#             for k in range(nProt):
-#                 d = distances[v][i, k]
-#                 soma = sum(
-#                     ((d + 1e-7) / (distances[vv][i, kk] + 1e-7)) ** (1 / (parM - 1))
-#                     for vv in range(nVar) for kk in range(nProt)
-#                 )
-#                 Uvar[i, k] = soma ** -1
-#         U.append(Uvar)
-    
-#     return U
 def update_membership(distances, parM):
-    nObj = distances[0].shape[0]
-    nProt = distances[0].shape[1]
-    nVar = len(distances)
-    U = []
-    
-    # Stack all distances into a single 3D array for efficient computation
-    distances_stacked = np.stack(distances)  # Shape: (nVar, nObj, nProt)
-    
-    # Precompute the exponent term
-    exponent = 1.0 / (parM - 1.0)
-    
-    for v in range(nVar):
-        Uvar = np.zeros((nObj, nProt))
-        for i in range(nObj):
-            # Extract the distance for the current object i and variable v
-            d = distances_stacked[v, i, :]  # Shape: (nProt,)
-            
-            # Reshape d to (nProt, 1, 1) for broadcasting
-            d_reshaped = d[:, None, None]  # Shape: (nProt, 1, 1)
-            
-            # Reshape distances_stacked[:, i, :] to (1, nVar, nProt) for broadcasting
-            dd_reshaped = distances_stacked[:, i, :][None, :, :]  # Shape: (1, nVar, nProt)
-            
-            # Compute the ratio (d + 1e-7) / (dd + 1e-7) for all vv and kk
-            ratio = (d_reshaped + 1e-7) / (dd_reshaped + 1e-7)  # Shape: (nProt, nVar, nProt)
-            
-            # Raise the ratio to the power of the exponent
-            ratio_pow = ratio ** exponent  # Shape: (nProt, nVar, nProt)
-            
-            # Sum over vv and kk
-            soma = np.sum(ratio_pow, axis=(1, 2))  # Shape: (nProt,)
-            
-            # Compute the final membership value
-            Uvar[i, :] = soma ** (-1.0)
-        
-        U.append(Uvar)
-    
+    # distances: array shape (nVar, nObj, nProt)
+    eps = 1e-7
+    m = parM
+    exponent = 1.0/(m-1.0)
+
+    # Queremos U[v,i,k] = [ Σ_{vv,kk} ((d_{v,i,k}+ε)/(d_{vv,i,kk}+ε))^exponent ]^(-1)
+
+    # 1) Expanda distâncias para termos de numerador e denominador simultâneos:
+    #    d_num shape: (nVar, nObj, nProt, 1, 1)
+    #    d_den shape: (1,    nObj, 1,    nVar, nProt)
+    d_num = distances[:,:,:,None,None]       # → (nVar, nObj, nProt, 1, 1)
+    # d_den = distances[None,:,:,:, :] + eps      # → (1,    nObj,   nVar, nProt)
+    d_den = distances.transpose(1, 0, 2)[None, :, None, :, :] + eps
+
+    # 2) Calcule razão + potência
+    ratio = (d_num + eps) / d_den               # → (nVar, nObj, nProt, nVar, nProt)
+    ratio_pow = ratio ** exponent
+
+    # 3) Some sobre variáveis vv e prot kk (eixos 3 e 4)
+    soma = np.sum(ratio_pow, axis=(3,4))      # → (nVar, nObj, nProt)
+
+    # 4) Inverso para obter U
+    U = soma ** -1.0
+
     return U
 
-# def update_criterion(memberships, distances, parM):
-#     J = 0
-#     for i in range(len(distances)):
-#         J += sum((memberships[i][j, k] ** parM) * distances[i][j, k]
-#                  for j in range(distances[i].shape[0])
-#                  for k in range(distances[i].shape[1]))
-#     return J
 def update_criterion(memberships, distances, parM):
-    J = 0
-    nVar = len(distances)
-    
-    for i in range(nVar):
-        J += np.sum((memberships[i] ** parM) * distances[i])
-    
-    return J
+    U = np.stack(memberships)               # → (nVar, nObj, nProt)
+    return np.sum((U ** parM) * distances)
 
 def aggregate_matrix(memberships, M):
     nObj, nProt = memberships[0].shape
@@ -173,21 +122,42 @@ def aggregate_matrix(memberships, M):
     
     return memb
 
-# def compute_Aij(memberships):
-#     nObj, nProt = memberships[0].shape
-#     nVar = len(memberships)
-#     M = np.ones((nProt, nVar))
-    
-#     for j in range(nProt):
-#         for k in range(nVar):
-#             M[j, k] = sum(memberships[k][:, j]) / sum(sum(memberships[kk][:, j]) for kk in range(nVar))
-    
-#     return M
 def compute_aij(memberships):
     memberships = np.stack(memberships)  # Stack list of arrays into a 3D array
     soma = np.sum(memberships, axis=(0, 1))  # Sum over objects and variables for each prototype
     M = np.sum(memberships, axis=1) / soma  # Normalize
     return M.T  # Transpose to match the original shape
+
+def computeBj(U, data, P, z, parM):
+    nVar = data.shape[1]
+    nProt = P.shape[0]
+    Bj = np.zeros(nVar, dtype=np.float64)
+
+    for j in range(nVar):
+        for i in range(nProt):
+            y_ij = P[i, j]  # centróide do cluster i para a variável j
+            Bj[j] += np.sum((U[j][:, i] ** parM) * ((y_ij - z[j]) ** 2))
+
+    return Bj
+
+def computeTj(U, data, z, parM):
+    
+    nObj, nVar = data.shape
+    nProt = U[0].shape[1]
+    Tj = np.zeros(nVar, dtype=np.float64)
+
+    for j in range(nVar):
+        for i in range(nObj):
+            for k in range(nProt):
+                Tj[j] += (U[j][i, k] ** parM) * ((data[i, j] - z[j]) ** 2)
+
+    return Tj
+  
+def computeRj(Bj, Tj):
+    return Bj / Tj    # Cuidado divisão por zero
+
+def overallCentroid(data):
+    return np.mean(data, axis=0)
 
 def get_partition(memb):
     return np.argmax(memb, axis=1)

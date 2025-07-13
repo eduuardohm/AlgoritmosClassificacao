@@ -96,7 +96,7 @@ def selectDataset(id):
 		return (dataset, dataset_ref, nClasses, dataset_name)
 	elif id == 8:
 		dataset_name = 'Musk Version 1'
-		dataset = pd.read_csv('datasets/musk1.data', header=None)		# Musk (Version 1) | UCI Machine Learning Repository | 165 features
+		dataset = pd.read_csv('datasets/musk1.data', header=None)		# Musk (Version 1) | UCI Machine Learning Repository | 165 features | 476 Instances
 		dataset = dataset.drop(dataset.columns[[0, 1]], axis=1)
 
 		dataset_ref = dataset.iloc[:,-1].tolist()

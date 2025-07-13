@@ -60,7 +60,6 @@ def MFCM(data, centers, parM):
   # print(f'B: {B}')
 
   return resp
-	
 
 def initializePrototypes(data,centers):
   # Modificar essa função (acho que pode ser mais eficiente)

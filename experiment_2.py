@@ -3,7 +3,8 @@ import numpy as np
 import random
 import time
 import math
-from MFCM import MFCM
+from clustering.MFCM import MFCM
+from src.clustering.MFCM_otimizado import MFCM_otimizado
 from filters import *
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn import preprocessing
@@ -37,10 +38,11 @@ def execute(nRep, dataset, centersAll, label):
     R = 0
 
     for r in range(nRep):
-        # print(f'MFCM rep: {r}')
+        print(f'MFCM rep: {r}')
         centers = list(map(int, centersAll[r,].tolist()))
 
-        resp = MFCM(dataset, centers, 2)
+        # resp = MFCM(dataset, centers, 2)
+        resp = MFCM_otimizado(dataset, centers, 2)
 
         J = resp[0]
         L_resp = resp[1]
@@ -264,7 +266,7 @@ def cross_validation(data, target, seed, n_neighbors, n_folds, nFilterRep, nClas
                 best_set = data[train]
 
     # Rank utilizando a métrica R
-    var_rank = heterogeneity_filter(best_mfcm['bestR'])
+    # var_rank = heterogeneity_filter(best_mfcm['bestR'])
     # print(f'Ranking de variáveis: {var_rank}')
 
     # var_rank = return_rank(best_set, best_mfcm, nClasses)
@@ -381,7 +383,7 @@ if __name__ == "__main__":
 
     datasets = [3]
     n_neighbors = 5
-    nRepMFCM = 50
+    nRepMFCM = 5
 
     # experimento(3, n_neighbors, nRepMFCM)
 
