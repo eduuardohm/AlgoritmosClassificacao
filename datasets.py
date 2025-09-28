@@ -503,9 +503,6 @@ def selectDataset(id):
 	elif id == 19:
 		dataset_name = 'Ionosphere'
 		dataset = pd.read_csv('datasets/ionosphere.data', header=None)		# Ionosphere | UCI Machine Learning Repository | 34 features | 351 instances
-
-		# dataset_ref = dataset.iloc[:,-1].tolist()
-		# dataset_ref = np.array(dataset_ref)
 		
 		dataset_ref = dataset.iloc[:, -1].map({'g': 1, 'b': 0}).to_numpy()
 		dataset = dataset.drop(dataset.columns[-1], axis=1)

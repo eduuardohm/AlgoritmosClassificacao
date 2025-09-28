@@ -1,9 +1,15 @@
 import numpy as np
+from src.methods.mf_m import sum_filter
+from src.methods.mf_v import variance_filter
+from src.methods.mcfs import mcfs
+from src.methods.udfs import udfs
+from src.methods.laplacian_score import lap_score, feature_ranking
+from src.methods.fisher_score import fisher_score
+from src.methods.reliefF import reliefF
 from src.config import N_FOLDS, VAR_PERCENTAGES, DATASETS, SEED
 from sklearn.model_selection import StratifiedKFold
-from src.evaluation.knn_eval import evalute_knn
-
-from methods.laplacian_score import lap_score
+from src.evaluation.knn_eval import evaluate_knn
+from src.evaluation.mfcm_eval import exec_mfcm_filter
 
 def validate_feature_selection(X, y, seed=SEED, n_neighbors=5, n_folds=N_FOLDS, n_filter_rep=50, n_classes=None, filter_method='sum', dataset_name=None, outer_fold_index=0):
     """
@@ -32,15 +38,58 @@ def validate_feature_selection(X, y, seed=SEED, n_neighbors=5, n_folds=N_FOLDS, 
         
         print(f"Outer Fold {outer_fold_index + 1}, Inner Fold {inner_fold_index + 1}:")
 
+        result = None
+
+        print(f"  Método de filtro: {filter_method}, Selecionando {nVar} variáveis.")
+
+
+        if filter_method == 'variance_filter' or filter_method == 'sum_filter':
+            mfcm = exec_mfcm_filter(X, n_filter_rep, n_classes, y)
+
         if filter_method == 'sum_filter':
-            print("Selected method: Sum Filter")
+            U = mfcm['bestM']
+            sum_scores = sum_filter(X, U, n_classes)
+            sum_scores.sort(key=lambda k: k[0], reverse=True)  # menor = melhor
+            ranked_indices = [idx for _, idx in sum_scores]
+            features = ranked_indices[:nVar]
+
+        elif filter_method == 'baseline':
+            ranked_indices = np.arange(X.shape[1])
+            features = ranked_indices[:nVar]
+            
         elif filter_method == 'variance_filter':
-            print("Selected method: Variance Filter")
+            U = mfcm['bestM']
+            var_scores = variance_filter(X, U, n_classes)
+            var_scores.sort(key=lambda k: k[0], reverse=True)  # maior = melhor
+            ranked_indices = [idx for _, idx in var_scores]
+            features = ranked_indices[:nVar]
+
         elif filter_method == 'ls':
             l_scores = lap_score(X)
             ranked_indices = np.argsort(l_scores)
-            features = [(0, idx) for idx in ranked_indices]
             features = np.argsort(l_scores)[:nVar]
+
+        elif filter_method == 'mcfs':
+            W = mcfs(X, X.shape[1])
+            ranked_indices = np.argsort(W.max(axis=1))[::-1]
+            features = ranked_indices[:nVar]
+
+        elif filter_method == 'udfs':
+            W = udfs(X, n_clusters=n_classes, k=5, gamma=0.1)
+            norms = np.linalg.norm(W, axis=1)
+            ranked_indices = np.argsort(norms)[::-1]
+            features = ranked_indices[:nVar]
+
+        elif filter_method == 'fisher_score':
+            f_scores = fisher_score(X, y)
+            ranked_indices = np.argsort(f_scores)[::-1]
+            features = ranked_indices[:nVar]
+
+        elif filter_method == 'reliefF':
+            r_scores = reliefF(X, y)
+            ranked_indices = np.argsort(r_scores)[::-1]
+            features = ranked_indices[:nVar]
+
         else:
             raise ValueError("Método de filtro desconhecido.")
         
@@ -48,14 +97,10 @@ def validate_feature_selection(X, y, seed=SEED, n_neighbors=5, n_folds=N_FOLDS, 
         X_train = X[train_idx][:, features]
         X_test = X[test_idx][:, features]
 
-        f1, accuracy, precision, recall = evalute_knn(X_train, X_test, y[train_idx], y[test_idx], n_neighbors=n_neighbors)
+        f1, accuracy, precision, recall, execution_time = evaluate_knn(X_train, X_test, y[train_idx], y[test_idx], n_neighbors=n_neighbors)
 
         if f1 > best_score:
             best_score = f1
             best_features_rank = ranked_indices
 
     return best_features_rank
-
-# Utilizar na função de validação externa:
-# selected_indices = ranked_indices[:numVar]
-# X_filtered = X[:, selected_indices]

@@ -3,9 +3,11 @@
 
 
 import numpy as np
+from timeit import default_timer as timer
 
 
 def MFCM(data, centers, parM):
+    start = timer()
     max_iteration = 100
     J = np.iinfo(np.int32).max
     count = 0
@@ -25,8 +27,10 @@ def MFCM(data, centers, parM):
     M = np.ones((len(centers), data.shape[1]))
     memb = aggregate_matrix(Ubefore, M)
     L = get_partition(memb)
+
+    end = timer()
     
-    result = [J, L, memb, count, 0]
+    result = [J, L, Ubefore, count, end - start, memb, 0]
     return result
 
 def initialize_prototypes(data, centers):

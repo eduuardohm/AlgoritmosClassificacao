@@ -3,7 +3,7 @@ import numpy as np
 import random
 import time
 import math
-from clustering.MFCM import MFCM
+from src.clustering.MFCM import MFCM
 from src.clustering.MFCM_otimizado import MFCM_otimizado
 from filters import *
 from sklearn.neighbors import KNeighborsClassifier
@@ -13,6 +13,7 @@ from sklearn.metrics import adjusted_rand_score, f1_score, accuracy_score, preci
 from sklearn.model_selection import StratifiedKFold, train_test_split
 from sklearn.model_selection import cross_val_score
 from datasets import selectDataset
+from src.evaluation.feature_selection_validation import validate_feature_selection
 
 from sklearn.feature_selection import mutual_info_classif, mutual_info_regression
 
@@ -269,7 +270,7 @@ def cross_validation(data, target, seed, n_neighbors, n_folds, nFilterRep, nClas
     # var_rank = heterogeneity_filter(best_mfcm['bestR'])
     # print(f'Ranking de variáveis: {var_rank}')
 
-    # var_rank = return_rank(best_set, best_mfcm, nClasses)
+    var_rank = return_rank(best_set, best_mfcm, nClasses)
 
     return var_rank
 
@@ -292,6 +293,7 @@ def experimento(indexData, n_neighbors, nFilterRep):
         print(f'Fold externo [{i_externo}]')
 
         var_rank = cross_validation(data[train], target[train], SEED, n_neighbors, 5, nFilterRep, nClasses, porcentagemVar, 'MFCM', data_name, i_externo)
+
         scores_porcentagem = {}
 
         for i in porcentagemVar:

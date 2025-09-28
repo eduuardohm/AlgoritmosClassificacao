@@ -2,7 +2,7 @@ import time
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import f1_score, accuracy_score, precision_score, recall_score
 
-def evalute_knn(X_train, X_test, y_train, y_test, n_neighbors=5):
+def evaluate_knn(X_train, X_test, y_train, y_test, n_neighbors=5):
     """
         Avaliação do desempenho de classificador KNN, com retorno de métricas de avaliação e tempo de execução.
 

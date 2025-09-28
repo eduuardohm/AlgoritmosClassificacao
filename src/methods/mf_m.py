@@ -21,4 +21,4 @@ def sum_filter(data, U, nClusters):
         aTotal = round(aTotal, 5)
         V.append((aTotal, i))
     
-    return (V, 'Filtro por Somatório')
+    return V

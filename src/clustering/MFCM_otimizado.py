@@ -37,7 +37,7 @@ def MFCM_otimizado(data, centers, parM):
     T = computeTj(Ubefore, data, z, parM)
     R = computeRj(B, T)
     # -------------------------------------------------
-    
+
     result = [J, L, Ubefore, count, end - start, memb, R]
 
     return result
@@ -154,7 +154,8 @@ def computeTj(U, data, z, parM):
     return Tj
   
 def computeRj(Bj, Tj):
-    return Bj / Tj    # Cuidado divisão por zero
+    epsilon = 1e-9
+    return Bj / (Tj + epsilon)    # Cuidado divisão por zero
 
 def overallCentroid(data):
     return np.mean(data, axis=0)
