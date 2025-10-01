@@ -15,7 +15,7 @@ def sum_filter(data, U, nClusters):
                 a += u
         
             a /= nObj # Relevância em relação ao cluster j
-            aTotal += a
+            aTotal.append(a)
 
         aTotal = np.mean(aTotal)
         aTotal = round(aTotal, 5)

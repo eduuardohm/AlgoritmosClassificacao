@@ -1,10 +1,14 @@
 import numpy as np
+import random
 from sklearn.model_selection import StratifiedKFold
 from src.evaluation.feature_selection_validation import validate_feature_selection
 from src.evaluation.knn_eval import evaluate_knn
 from src.config import N_FOLDS, SEED, N_REP_MFCM, N_NEIGHBORS, VAR_PERCENTAGES
 from datasets import selectDataset
 from src.utils.save_summary_csv import save_summary
+
+random.seed(SEED)
+np.random.seed(SEED)
 
 def run_experiment(data_index, filter_method='sum_filter'):
     """
@@ -31,7 +35,7 @@ def run_experiment(data_index, filter_method='sum_filter'):
 
         print(f"Fold {extern_index + 1}/{N_FOLDS}")
 
-        var_rank = validate_feature_selection(
+        var_rank, filter_time = validate_feature_selection(
             data[train_index], target[train_index],
             seed=SEED,
             n_neighbors=N_NEIGHBORS,
@@ -61,9 +65,9 @@ def run_experiment(data_index, filter_method='sum_filter'):
             external_results[p]["accuracy"].append(acc)
             external_results[p]["precision"].append(prec)
             external_results[p]["recall"].append(rec)
-            external_results[p]["time"].append(exec_time)
+            external_results[p]["time"].append(filter_time)
 
-            print(f" {p}% features → F1: {f1:.4f}, Acc: {acc:.4f}, Prec: {prec:.4f}, Rec: {rec:.4f}, Time: {exec_time:.2f}s")
+            print(f" {p}% features → F1: {f1:.4f}, Acc: {acc:.4f}, Prec: {prec:.4f}, Rec: {rec:.4f}, Time: {filter_time:.2f}s")
 
     summary = {}
     for p in VAR_PERCENTAGES:
@@ -86,13 +90,17 @@ def run_experiment(data_index, filter_method='sum_filter'):
     return summary
 
 if __name__ == "__main__":
-    data_list = [3, 4, 5, 6, 8, 19, 20, 21, 22]
-    # filter_methods = ['ls', 'udfs', 'mcfs', 'variance_filter', 'sum_filter']
-    # data_list = [8]
+    # data_list = [3, 4, 5, 6, 8, 19, 20, 21, 22]
+    # data_list = [3, 22, 21, 4, 19, 20, 8, 5, 6]    # Ordenado por tempo de execução (menor para maior)
+    data_list = [6]  # rodar com mf-m e mf-v
+    # data_list = [5] 
+    # filter_methods = ['ls', 'udfs', 'mcfs', 'fisher_score', 'reliefF']
     filter_methods = ['variance_filter', 'sum_filter']
-    # filter_methods = ['baseline']
-
+    # filter_methods = ['sum_filter']
+    # filter_methods = ['variance_filter']
     # filter_methods = ['reliefF']
+
+    # filter_methods = ['baseline']
 
     for dataset_index in data_list:
         for method in filter_methods:

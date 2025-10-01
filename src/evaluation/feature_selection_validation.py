@@ -10,6 +10,8 @@ from src.config import N_FOLDS, VAR_PERCENTAGES, DATASETS, SEED
 from sklearn.model_selection import StratifiedKFold
 from src.evaluation.knn_eval import evaluate_knn
 from src.evaluation.mfcm_eval import exec_mfcm_filter
+import time
+
 
 def validate_feature_selection(X, y, seed=SEED, n_neighbors=5, n_folds=N_FOLDS, n_filter_rep=50, n_classes=None, filter_method='sum', dataset_name=None, outer_fold_index=0):
     """
@@ -44,51 +46,77 @@ def validate_feature_selection(X, y, seed=SEED, n_neighbors=5, n_folds=N_FOLDS, 
 
 
         if filter_method == 'variance_filter' or filter_method == 'sum_filter':
-            mfcm = exec_mfcm_filter(X, n_filter_rep, n_classes, y)
-
+            mfcm = exec_mfcm_filter(X, n_filter_rep, n_classes, y, seed)
+    
         if filter_method == 'sum_filter':
+            start_time = time.time()
+
             U = mfcm['bestM']
             sum_scores = sum_filter(X, U, n_classes)
-            sum_scores.sort(key=lambda k: k[0], reverse=True)  # menor = melhor
+            sum_scores.sort(key=lambda k: k[0], reverse=False)  # menor = melhor
             ranked_indices = [idx for _, idx in sum_scores]
             features = ranked_indices[:nVar]
+            end_time = time.time()
+            
+            filter_time = end_time - start_time
 
         elif filter_method == 'baseline':
+            start_time = time.time()
             ranked_indices = np.arange(X.shape[1])
             features = ranked_indices[:nVar]
+            end_time = time.time()
+            filter_time = end_time - start_time
             
         elif filter_method == 'variance_filter':
+            start_time = time.time()
             U = mfcm['bestM']
             var_scores = variance_filter(X, U, n_classes)
             var_scores.sort(key=lambda k: k[0], reverse=True)  # maior = melhor
             ranked_indices = [idx for _, idx in var_scores]
             features = ranked_indices[:nVar]
+            end_time = time.time()
+            filter_time = end_time - start_time
 
         elif filter_method == 'ls':
+            start_time = time.time()
             l_scores = lap_score(X)
             ranked_indices = np.argsort(l_scores)
             features = np.argsort(l_scores)[:nVar]
+            end_time = time.time()
+            filter_time = end_time - start_time
 
         elif filter_method == 'mcfs':
+            start_time = time.time()
             W = mcfs(X, X.shape[1])
             ranked_indices = np.argsort(W.max(axis=1))[::-1]
             features = ranked_indices[:nVar]
+            end_time = time.time()
+            filter_time = end_time - start_time
 
         elif filter_method == 'udfs':
+            start_time = time.time()
             W = udfs(X, n_clusters=n_classes, k=5, gamma=0.1)
             norms = np.linalg.norm(W, axis=1)
             ranked_indices = np.argsort(norms)[::-1]
             features = ranked_indices[:nVar]
+            end_time = time.time()
+            filter_time = end_time - start_time
 
         elif filter_method == 'fisher_score':
+            start_time = time.time()
             f_scores = fisher_score(X, y)
             ranked_indices = np.argsort(f_scores)[::-1]
             features = ranked_indices[:nVar]
+            end_time = time.time()
+            filter_time = end_time - start_time
 
         elif filter_method == 'reliefF':
+            start_time = time.time()
             r_scores = reliefF(X, y)
             ranked_indices = np.argsort(r_scores)[::-1]
             features = ranked_indices[:nVar]
+            end_time = time.time()
+            filter_time = end_time - start_time
 
         else:
             raise ValueError("Método de filtro desconhecido.")
@@ -103,4 +131,4 @@ def validate_feature_selection(X, y, seed=SEED, n_neighbors=5, n_folds=N_FOLDS, 
             best_score = f1
             best_features_rank = ranked_indices
 
-    return best_features_rank
+    return best_features_rank, filter_time

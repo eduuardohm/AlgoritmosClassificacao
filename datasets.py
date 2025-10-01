@@ -103,8 +103,6 @@ def selectDataset(id):
 		dataset_ref = np.array(dataset_ref)
 		dataset = scaler.fit_transform(dataset)
 		nClasses = 2
-
-		print(dataset_ref)
 		
 		print("Dataset selecionado: Musk (Version 1)\n")
 		

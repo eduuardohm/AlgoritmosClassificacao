@@ -4,7 +4,7 @@ from sklearn.metrics import adjusted_rand_score
 from src.clustering.MFCM_otimizado import MFCM_otimizado
 from src.clustering.MFCM_bruno import MFCM
 
-def exec_mfcm_filter(data, nRep, nClusters, labels=None):
+def exec_mfcm_filter(data, nRep, nClusters, labels=None, seed=42):
     """
     Executa o algoritmo MFCM múltiplas vezes e retorna o melhor resultado.
 
@@ -23,6 +23,8 @@ def exec_mfcm_filter(data, nRep, nClusters, labels=None):
                 'bestR': vetor de heterogeneidade (se disponível em resp)
             }
     """
+    random.seed(seed)
+    np.random.seed(seed)
     nObj = len(data)
     centersMC = np.zeros((nRep, nClusters))
 
@@ -39,7 +41,7 @@ def exec_mfcm_filter(data, nRep, nClusters, labels=None):
 
     for r in range(nRep):
         centers = list(map(int, centersMC[r, :].tolist()))
-        resp = MFCM_otimizado(data, centers, 2)
+        resp = MFCM(data, centers, 2)
         # resp = MFCM(data, centers, 2)
 
         J = resp[0]
