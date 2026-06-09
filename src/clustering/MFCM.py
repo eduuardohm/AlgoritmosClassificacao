@@ -1,254 +1,132 @@
+# A multivariate fuzzy c-means method
+# https://www.sciencedirect.com/science/article/abs/pii/S1568494612005686
+
+
 import numpy as np
-# from numba import jit, cuda, njit
 from timeit import default_timer as timer
 
-# @jit(target='cuda')
 def MFCM(data, centers, parM):
 
-  start = timer()
-
-  maxIteration = 100
-  J = 1000
-
-  count = 0
-
-  P = initializePrototypes(data,centers)
-
-  Ubefore = 0
-  Jbefore = J + 1.0
-
-  while (Jbefore - J) > 0.0001 and count < maxIteration:
-
-    # print(f'interação interna mfcm: {count}')
-
-    count += 1
+    start = timer()
     
-    D = updateDistances(data, P)
-    # print('Distancias atualizadas')
-
-    U = updateMembership(D, parM)
-    # print('Membership atualizadas')
-
-    P = updatePrototypes(data, U, parM)
-    # print('Prototipos atualizados')
-
-    Jbefore = J
-    J = updateCriterion(U, D, parM)
-    # print('Criterio atualizado')
-
-    Ubefore = U	
-
-  M = np.arange(len(centers) * data.shape[1])
-  M = M.reshape((len(centers), data.shape[1]))
-
-  M = (np.ones_like(M)).astype('float64')
-
-  memb = aggregateMatrix(Ubefore,M)
-  L = getPartition(memb)
-
-  end = timer()
-
-  # -------------- Calcular Z, B, T, R --------------
-  z = overallCentroid(data)
-  B = computeBj(Ubefore, data, P, z, parM)
-  T = computeTj(Ubefore, data, z, parM)
-  R = computeRj(B, T)
-  # -------------------------------------------------
-
-  resp = [J, L, Ubefore, count, end - start, memb, R]
-
-  # print(f'B: {B}')
-
-  return resp
-
-def initializePrototypes(data,centers):
-  # Modificar essa função (acho que pode ser mais eficiente)
- 
-  nVar = data.shape[1]
-  nProt = len(centers)
-  
-  P = np.zeros((nProt, nVar), dtype=np.float64)
-  
-  P[:] = data[centers]
-  
-  return P
-
-
-def updatePrototypes(data, memberships, parM):
-  
-  nObj = data.shape[0]
-  nVar = data.shape[1]
-  nProt = memberships[0].shape[1]
-  
-  P = np.arange(nProt * nVar)
-  P = P.reshape((nProt, nVar))
-  P = (np.zeros_like(P)).astype('float64')
-
-  for i in range(0, nVar):
-  
-    for k in range(0, nProt):
-        
-      s = 0
-      ss = 0
-      
-      for j in range(0, nObj):
-          
-        delta = pow(memberships[i][j, k], parM)
-        obj = data[j,i]
-        
-        s += delta*obj
-        ss += delta
-      
-      s = s/ss
-      P[k,i] = s
-  
-  return P
-
-def updateDistances(data, prototypes):
-  
-  nObj, nVar = data.shape
-  nProt = prototypes.shape[0]
-
-  D = np.zeros((nVar, nObj, nProt), dtype=np.float64)
-  
-  Dvar = np.arange(nObj * nProt)
-  Dvar = Dvar.reshape((nObj, nProt))
-
-  for i in range(0, nVar):
+    max_iteration = 100
+    J = np.iinfo(np.int32).max
+    count = 0
+    P = initialize_prototypes(data, centers)
+    Ubefore = None
+    Jbefore = J + 1.0
     
-    Dvar = (np.zeros_like(Dvar)).astype('float64')
-  
-    for j in range(0, nObj):
-        
-      obj = data[j, i]
-      
-      for k in range(0, nProt):
-        prot = prototypes[k,i]
-        distance = pow(obj-prot, 2)
-        # distance = np.sum(np.square(np.subtract(obj, prot)))
-        Dvar[j,k] = distance
-
-
-    D[i] = Dvar.copy()
-      
-  # print(f'D dim: {D.ndim}')
-  # print(D)
-
-  return D
-
-# @jit(target_backend='cuda')
-def updateMembership(distances, parM):
-
-  epsilon = 0.0000001
-  nVar, nObj, nProt = distances.shape
-  U = np.zeros((nVar, nObj, nProt), dtype=np.float64)
-
-  for v in range(0, nVar):
-
-    Uvar = np.zeros((nObj, nProt), dtype=np.float64)
-  
-    for i in range(0, nObj):
-        
-      for k in range(0, nProt):
-      
-        d = distances[v][i,k]
-        # print(f'd: {d}')
-        soma = 0
-
-        for vv in range(0, nVar):
-          for kk in range(0, nProt):
-            dd = distances[vv][i,kk]
-            
-            # print(f'D: {d}; DD: {dd}')
-
-            aux1 = (d + epsilon) / (dd +epsilon)
-            aux2 = (1.0/(parM-1.0))
-            soma += np.power(aux1, aux2)
+    while Jbefore - J > 0.0001 and count < max_iteration:
+        count += 1
+        D = update_distances(data, P)
+        U = update_membership(D, parM)
+        P = update_prototypes(data, U, parM)
+        Jbefore = J
+        J = update_criterion(U, D, parM)
+        Ubefore = U
     
-        Uvar[i,k] = np.power(soma, -1.0)
+    M = np.ones((len(centers), data.shape[1]))
+    memb = aggregate_matrix(Ubefore, M)
+    L = get_partition(memb)
+
+    end = timer()
+
+    # -------------- Calcular Z, B, T, R --------------
+    z = overallCentroid(data)
+    B = computeBj(Ubefore, data, P, z, parM)
+    T = computeTj(Ubefore, data, z, parM)
+    R = computeRj(B, T)
+    # -------------------------------------------------
+
+    result = [J, L, Ubefore, count, end - start, memb, R]
+
+    return result
+
+def initialize_prototypes(data, centers):
+    return np.array([data[c] for c in centers])
+
+# def update_prototypes(data, memberships, parM):
+#     # nObj = data.shape[0]  # Number of objects
+#     nVar = data.shape[1]  # Number of variables
+#     nProt = memberships[0].shape[1]  # Number of prototypes
+#     P = np.zeros((nProt, nVar))
+#     for i in range(nVar):
+#         membership = memberships[i]  # Shape: (nObj, nProt)
+#         weighted_memberships = membership ** parM  # Shape: (nObj, nProt)
+#         numerator = np.sum(data[:, i, np.newaxis] * weighted_memberships, axis=0)  # Shape: (nProt,)
+#         denominator = np.sum(weighted_memberships, axis=0)  # Shape: (nProt,)
+#         P[:, i] = numerator / denominator
+#     return P
+
+def update_prototypes(data, memberships, parM):
+
+    U = np.stack(memberships)               # → (nVar, nObj, nProt)
+    W = U ** parM                           # → pesos elevados a m
+
+    data_T = data.T[:, :, None]             # → (nVar, nObj, 1)
+
+    numer = np.sum(W * data_T, axis=1)      # → (nVar, nProt)
+    denom = np.sum(W, axis=1)               # → (nVar, nProt)
+    P = (numer / denom).T                   # → (nProt, nVar)
+
+    return P
+
+def update_distances(data, prototypes):
+    diff = data[:, np.newaxis, :] - prototypes[np.newaxis, :, :]  # (nObj, nProt, nVar)
+    D_full = diff ** 2  
+
+    D = D_full.transpose(2, 0, 1)
+
+    return D
+
+def update_membership(distances, parM):
+    # distances: array shape (nVar, nObj, nProt)
+    eps = 1e-7
+    m = parM
+    exponent = 1.0/(m-1.0)
+
+    # Queremos U[v,i,k] = [ Σ_{vv,kk} ((d_{v,i,k}+ε)/(d_{vv,i,kk}+ε))^exponent ]^(-1)
+
+    # 1) Expanda distâncias para termos de numerador e denominador simultâneos:
+    #    d_num shape: (nVar, nObj, nProt, 1, 1)
+    #    d_den shape: (1,    nObj, 1,    nVar, nProt)
+    d_num = distances[:,:,:,None,None]       # → (nVar, nObj, nProt, 1, 1)
+    # d_den = distances[None,:,:,:, :] + eps      # → (1,    nObj,   nVar, nProt)
+    d_den = distances.transpose(1, 0, 2)[None, :, None, :, :] + eps
+
+    # 2) Calcule razão + potência
+    ratio = (d_num + eps) / d_den               # → (nVar, nObj, nProt, nVar, nProt)
+    ratio_pow = ratio ** exponent
+
+    # 3) Some sobre variáveis vv e prot kk (eixos 3 e 4)
+    soma = np.sum(ratio_pow, axis=(3,4))      # → (nVar, nObj, nProt)
+
+    # 4) Inverso para obter U
+    U = soma ** -1.0
+
+    return U
+
+def update_criterion(memberships, distances, parM):
+    U = np.stack(memberships)               # → (nVar, nObj, nProt)
+    return np.sum((U ** parM) * distances)
+
+def aggregate_matrix(memberships, M):
+    nObj, nProt = memberships[0].shape
+    nVar = len(memberships)
+    memb = np.zeros((nObj, nProt))
     
-    U[v] = Uvar.copy()
-  
-  return U
-
-
-def updateCriterion(memberships,distances,parM):
-  
-  J = 0
-  
-  nObj = distances.shape[1]
-  nProt = distances[0].shape[1]
-  nVar = len(distances)
-
-  # print('Criterio')
-  # print(memberships.size)
-  # print(memberships)
-
-  # print(memberships)
-
-  for i in range(0, nVar):
-  
-    for j in range(0, nObj):
-        
-      for k in range(0, nProt):
-        delta = pow(memberships[i][j,k], parM)
-        distance = distances[i][j,k]
-        
-        J += delta*distance
+    for j in range(nObj):
+        soma0 = sum(sum(M[k, i] * memberships[i][j, k] for i in range(nVar)) for k in range(nProt))
+        for k in range(nProt):
+            memb[j, k] = sum(M[k, i] * memberships[i][j, k] for i in range(nVar)) / soma0
     
-  return J
+    return memb
 
-
-def aggregateMatrix(memberships, M):
-    
-  nObj = memberships.shape[1]
-  nProt = memberships[0].shape[1]
-  nVar = len(memberships)
-
-  memb = np.arange(nObj * nProt)
-  memb = memb.reshape((nObj, nProt))
-  
-  memb = (np.zeros_like(memb)).astype('float64')	
-
-  for j in range(0, nObj):
-    soma0 = 0
-    
-    for k in range(0,nProt):
-      soma = 0
-      
-      for i in range(0, nVar):
-          soma += M[k,i]*memberships[i][j,k]
-          soma0 += M[k,i]*memberships[i][j,k]
-      
-      memb[j,k] = soma
-    
-    for k in range(0,nProt):
-      memb[j,k] = memb[j,k]/soma0
-
-  return memb
-
-
-def computeAij(memberships):
-    
-  nProt = memberships.shape[1]
-  nVar = len(memberships)
-
-  M = np.arrange(nProt * nVar)
-  M = M.reshape((nProt, nVar))
-
-  M = (np.ones_like(M)).astype('float64')
-
-  for j in range(0, nProt):
-    for k in range(0,nVar):
-      M[j,k] = np.sum(memberships[k][:,j])
-      soma = 0
-      
-      for kk in range(0, nVar):
-        soma =  soma + sum(memberships[kk][:,j])
-      
-      M[j,k] = M[j,k]/soma
-
-  return M
+def compute_aij(memberships):
+    memberships = np.stack(memberships)  # Stack list of arrays into a 3D array
+    soma = np.sum(memberships, axis=(0, 1))  # Sum over objects and variables for each prototype
+    M = np.sum(memberships, axis=1) / soma  # Normalize
+    return M.T  # Transpose to match the original shape
 
 def computeBj(U, data, P, z, parM):
     nVar = data.shape[1]
@@ -276,19 +154,11 @@ def computeTj(U, data, z, parM):
     return Tj
   
 def computeRj(Bj, Tj):
-    return Bj / Tj    # Cuidado divisão por zero
+    epsilon = 1e-9
+    return Bj / (Tj + epsilon)    # Cuidado divisão por zero
 
 def overallCentroid(data):
     return np.mean(data, axis=0)
 
-
-def getPartition(memberships):
-  
-  # L = []
-
-  # for object in memberships:
-  #   L.append(np.argmax(object) + 1)
-
-  L = [np.argmax(object) + 1 for object in memberships]
-  
-  return L
+def get_partition(memb):
+    return np.argmax(memb, axis=1)

@@ -95,8 +95,8 @@ if __name__ == "__main__":
     data_list = [6]  # rodar com mf-m e mf-v
     # data_list = [5] 
     # filter_methods = ['ls', 'udfs', 'mcfs', 'fisher_score', 'reliefF']
-    filter_methods = ['variance_filter', 'sum_filter']
-    # filter_methods = ['sum_filter']
+    # filter_methods = ['variance_filter', 'sum_filter']
+    filter_methods = ['sum_filter']
     # filter_methods = ['variance_filter']
     # filter_methods = ['reliefF']
 

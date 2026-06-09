@@ -3,8 +3,8 @@ import numpy as np
 import random
 import time
 import math
+from src.clustering.MFCM_original import MFCM_original
 from src.clustering.MFCM import MFCM
-from src.clustering.MFCM_otimizado import MFCM_otimizado
 from filters import *
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn import preprocessing
@@ -42,8 +42,8 @@ def execute(nRep, dataset, centersAll, label):
         print(f'MFCM rep: {r}')
         centers = list(map(int, centersAll[r,].tolist()))
 
-        # resp = MFCM(dataset, centers, 2)
-        resp = MFCM_otimizado(dataset, centers, 2)
+        resp = MFCM(dataset, centers, 2)
+        # resp = MFCM_original(dataset, centers, 2)
 
         J = resp[0]
         L_resp = resp[1]

@@ -3,7 +3,7 @@ import numpy as np
 import random
 import time
 import math
-from clustering.MFCM import MFCM
+from clustering.MFCM_original import MFCM
 from filters import *
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn import preprocessing

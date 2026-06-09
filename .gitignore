@@ -1,0 +1,21 @@
+# Ignore Windows system files
+desktop.ini
+Thumbs.db
+
+# Python cache files
+*.pyc
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Common editor/project artifacts
+.DS_Store
+.ipynb_checkpoints/
+
+# Virtual environment
+venv/
+
+# Generated output and logs
+# logs/
+# resultados/
+matrices/

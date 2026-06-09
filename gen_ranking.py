@@ -7,7 +7,7 @@ from scipy.stats import rankdata
 datasets = ['Breast Cancer', 'Heart Statlog Dataset', 'Ionosphere', 'Madelon', 'Musk Version 1', 'Scene', 'Sonar Dataset', 'Wine', 'Zoo Dataset']
 caminho_base = 'resultados/'
 metodos = ["baseline", "ls", "mcfs", "udfs", "fisher_score", "reliefF", "sum_filter", "variance_filter"]
-metricas = ["f1"]
+metricas = ["recall"]
 
 # Adicionar baseline
 

@@ -1,8 +1,7 @@
 import random
 import numpy as np
 from sklearn.metrics import adjusted_rand_score
-from src.clustering.MFCM_otimizado import MFCM_otimizado
-from src.clustering.MFCM_bruno import MFCM
+from src.clustering.MFCM import MFCM
 
 def exec_mfcm_filter(data, nRep, nClusters, labels=None, seed=42):
     """
