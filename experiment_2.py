@@ -5,7 +5,9 @@ import time
 import math
 from src.clustering.MFCM_original import MFCM_original
 from src.clustering.MFCM import MFCM
-from filters import *
+from src.utils.apply_filter import apply_filter
+from src.methods.mf_v import variance_filter
+from src.methods.mf_m import sum_filter
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn import preprocessing
 from sklearn.preprocessing import StandardScaler

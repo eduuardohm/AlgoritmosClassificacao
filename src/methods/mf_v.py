@@ -23,4 +23,4 @@ def variance_filter(data, U, nClusters):
 
         V.append((round(media * 100, 5), i))
     
-    return V
+    return (V, 'Filtro por Variância')

@@ -1,22 +1,17 @@
+import time
+import random
 import pandas as pd
 import numpy as np
-import random
-import time
-import math
-from clustering.MFCM_original import MFCM
-from filters import *
+from src.clustering.MFCM import MFCM
+from src.methods.mf_v import variance_filter
+from utils.apply_filter import apply_filter
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn import preprocessing
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import f1_score, accuracy_score, precision_score, recall_score
-from sklearn.model_selection import StratifiedKFold, train_test_split
-from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import train_test_split
 from datasets import selectDataset
 
-from sklearn.feature_selection import mutual_info_classif, mutual_info_regression
-
-import pickle
-import os
+from sklearn.feature_selection import mutual_info_regression
 
 random.seed(42) # Verificar se interfere na geração resultado dos sintéticos
 
